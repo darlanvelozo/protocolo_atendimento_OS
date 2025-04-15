@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Protocolos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #222831; /* Fundo mais escuro, criando um tom sério e profissional */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            color: #ececec; /* Texto claro para contraste */
+        }
+
+        h1 {
+            margin: 20px 0;
+            font-size: 2.5rem;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            background-color: #393e46; /* Fundo escuro no cabeçalho */
+            padding: 15px 0;
+            border-radius: 5px 5px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Leve sombra para o cabeçalho */
+        }
+
+        .table-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            max-width: 95%;
+            background-color: #2a2e35; /* Cor de fundo da tabela mais escura */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead th {
+            background-color: #444950; /* Cor de fundo mais sóbria para o cabeçalho */
+            color: #fff;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            padding: 12px 20px;
+            font-weight: bold;
+        }
+
+        tbody tr:hover {
+            background-color: #444950; /* Cor escura no hover */
+        }
+
+        tbody td {
+            text-align: center;
+            padding: 10px;
+            font-size: 1rem;
+            border-bottom: 1px solid #5e6d7d; /* Borda sutil entre as linhas */
+        }
+
+        .no-data {
+            color: #aaa;
+            font-weight: bold;
+            padding: 15px;
+            text-align: center;
+        }
+
+        /* Estilos para as linhas de cor personalizada */
+        .green-row {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+
+        .yellow-row {
+            background-color: #ffc107 !important;
+            color: white !important;
+        }
+
+        .red-row {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        /* Links de ordenação */
+        th a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: normal;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #ffffff; /* Cor azul suave ao passar o mouse */
+            text-decoration: underline;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+            
+            
+        }
+        /* Adicionando um efeito de transição nas células */
+        td, th {
+            transition: background-color 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestão de Protocolos - NOC TX</h1>
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th><a href="?order={{ new_order_data_criacao }}&sort=data_criacao" class="text-black">Ordenar por Data</a></th>
+                        <th><a href="?order={{ new_order_tipo_evento }}&sort=tipo_evento" class="text-black">Tipo de Evento</a></th>
+                        <th><a href="?order={{ new_order_tipo_rede }}&sort=tipo_rede" class="text-black">Tipo de Rede</a></th>
+                        <th><a href="?order={{ new_order_estado }}&sort=estado" class="text-black">Estado</a></th>
+                        <th>Última Atualização</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for protocolo_info in protocolos_com_mensagens %}
+                    <tr>
+                        <td class="{{ protocolo_info.protocolo.color_class }}">
+                            <a href="{% url 'detalhes_protocolo' protocolo_info.protocolo.id %}">
+                                {{ protocolo_info.protocolo.titulo }}
+                            </a>
+                        </td>
+                        <td class="{{ protocolo_info.protocolo.color_class }}">{{ protocolo_info.protocolo.data_criacao|date:"d/m/Y  H:i:s" }}</td>
+                        <td class="{{ protocolo_info.protocolo.color_class }}">{{ protocolo_info.protocolo.get_tipo_evento_display }}</td>
+                        <td class="{{ protocolo_info.protocolo.color_class }}">{{ protocolo_info.protocolo.get_tipo_rede_display }}</td>
+                        <td class="{{ protocolo_info.protocolo.color_class }}">{{ protocolo_info.protocolo.estado }}</td>
+                        <td class="{{ protocolo_info.protocolo.color_class }}">
+                            {{ protocolo_info.ultima_data_hora|date:"d/m/Y  H:i:s" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="no-data text-center">Nenhum protocolo encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script>
+    setTimeout(function() {
+        location.reload();
+    }, 50000); // A cada 5 segundos
+</script>
+</html>

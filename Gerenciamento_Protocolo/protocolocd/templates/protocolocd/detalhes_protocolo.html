@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Protocolo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilo do fundo */
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        /* Estilo do cartão */
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Títulos e texto */
+        h1, h3 {
+            color: #0069d9;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #343a40;
+        }
+
+        /* Botões */
+        .btn {
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        /* Estilização da seção de Atendimento */
+        .atendimento-section {
+            background-color: #f1f3f5;
+            border-left: 6px solid #007bff;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .atendimento-section h3 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+
+        .atendimento-section p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .atendimento-section p strong {
+            color: #495057;
+        }
+
+        /* Título centralizado */
+        .container {
+            margin-top: 50px;
+        }
+
+        /* Estilização do link de retorno */
+        .btn-return {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-return:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        /* Espaço do texto */
+        .card-text {
+            margin-bottom: 1rem;
+        }
+        /* Estilos para o botão */
+        .btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+         /* Formulário suspenso */
+         #form-mensagem {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            width: 350px;
+            max-width: 90%;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        #form-mensagem label {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: block;
+            color: #007BFF;
+        }
+
+        #form-mensagem input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        #form-mensagem button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #form-mensagem button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Overlay escurecido */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Estilo do modal de alerta */
+        #alert-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            width: 300px;
+            max-width: 90%;
+            z-index: 1001;
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        #alert-modal h4 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #alert-modal p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        #alert-modal .btn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #alert-modal .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Animação */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -55%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Estilização das mensagens */
+ul {
+    list-style-type: none; /* Remove os marcadores padrão da lista */
+    padding: 0;
+}
+
+ul li {
+    background-color: #f8f9fa; /* Fundo leve para contraste */
+    border: 1px solid #dee2e6; /* Borda sutil */
+    border-radius: 8px; /* Arredondamento */
+    padding: 15px;
+    margin-bottom: 10px; /* Espaçamento entre mensagens */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
+}
+
+ul li strong {
+    color: #007bff; /* Cor azul para destacar o usuário */
+}
+
+ul li:hover {
+    background-color: #e9ecef; /* Fundo ao passar o mouse */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Realce ao passar o mouse */
+}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Detalhes do Protocolo</h1>
+
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h3 class="card-title">Título: {{ protocolo.titulo }}</h3>
+                <p class="card-text">
+                    <strong>Iniciais do Estado:</strong> {{ protocolo.estado }}<br>
+                    <strong>Tipo de Evento:</strong> {{ protocolo.tipo_evento }}<br>
+                    <strong>Nome do POP A:</strong> {{ protocolo.nome_pop_a }}<br>
+                    <strong>Nome do POP B:</strong> {{ protocolo.nome_pop_b }}<br>
+                    <strong>Responsável:</strong> {{ protocolo.responsavel_trecho }}<br>
+                    <strong>Data/Hora da Falha:</strong> {{ protocolo.data_hora_falha }}<br>
+                    <strong>Clientes Afetados:</strong> {{ protocolo.clientes_afetados }}<br>
+                </p>
+
+                {% if atendimento %}
+                    <div class="atendimento-section">
+                        <h3><i class="fas fa-headset"></i> Informações do Atendimento</h3>
+                        <p><strong>Protocolo de Atendimento:</strong> {{ atendimento.protocolo_atendimento }}</p>
+                        <p><strong>Descrição de Abertura:</strong> {{ atendimento.descricao_abertura }}</p>
+                        <p><strong>Status do Atendimento:</strong> {{ atendimento.status }}</p>
+                        <p><strong>Tipo Atendimento:</strong> {{ atendimento.A_tipo_atendimento }}</p>
+                        <p><strong>Data de Cadastro:</strong> {{ atendimento.data_cadastro }}</p>
+                        <p><strong>Data Fechamento:</strong>
+                            {% if not atendimento.data_fechamento %}
+                                Em Atividade
+                            {% else %}
+                                {{ atendimento.data_fechamento }}
+                            {% endif %}
+                        </p>
+                    </div>
+                {% else %}
+                    <p><i class="fas fa-exclamation-circle"></i> Este protocolo ainda não possui um atendimento associado.</p>
+                {% endif %}
+                <br><br>
+                <h3>Mensagens</h3>
+<ul>
+    {% for mensagem in mensagens %}
+        <li>
+            <strong>{{ mensagem.usuario }}</strong> em {{ mensagem.data_hora|date:"d/m/Y H:i" }}:<br>
+            {{ mensagem.mensagem }}
+        </li>
+    {% endfor %}
+</ul>
+
+                <br>
+                <a id="btn-voltar" class="btn btn-return">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+                <!-- Botão Atualizar Atendimento -->
+    <a id="btn-adicionar-mensagem" class="btn">
+        Atualizar Atendimento
+    </a>
+
+    <!-- Overlay para fundo escurecido -->
+    <div id="overlay"></div>
+
+    <!-- Formulário suspenso -->
+    <div id="form-mensagem">
+        <form id="form-mensagem-atendimento">
+            <label for="mensagem">Mensagem de Atualização:</label>
+            <input type="text" id="mensagem" name="mensagem" required>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+                
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    document.getElementById('btn-voltar').addEventListener('click', function() {
+        window.history.back();
+    });
+</script>
+<script>
+    // Referências aos elementos HTML
+    const btnAdicionarMensagem = document.getElementById("btn-adicionar-mensagem");
+    const formMensagem = document.getElementById("form-mensagem");
+    const overlay = document.getElementById("overlay");
+
+    // Função para exibir o formulário suspenso
+    btnAdicionarMensagem.addEventListener("click", function () {
+        formMensagem.style.display = "block";
+        overlay.style.display = "block";
+    });
+
+    // Função para esconder o formulário e o overlay
+    overlay.addEventListener("click", function () {
+        formMensagem.style.display = "none";
+        overlay.style.display = "none";
+    });
+
+    // Fechar o formulário quando o botão Enviar for clicado
+    const formAtendimento = document.getElementById("form-mensagem-atendimento"); // Renomeada para evitar conflito
+    formAtendimento.addEventListener("submit", function (event) {
+        event.preventDefault(); // Previne o envio do formulário para o servidor
+
+        // Obtém os valores do formulário
+        const mensagem = document.getElementById("mensagem").value;
+        
+        // Envia os dados via POST para o backend
+        fetch("", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"  // Certifique-se de usar o token CSRF no template
+            },
+            body: new URLSearchParams({
+                "mensagem": mensagem
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);  // Mostra mensagem de sucesso
+                formMensagem.style.display = "none"; // Fecha o formulário
+                overlay.style.display = "none";
+                location.reload();
+            } else {
+                alert(data.message);  // Mostra mensagem de erro
+            }
+        })
+        .catch(error => console.error("Erro:", error));
+    });
+    
+</script>
+
+</html>

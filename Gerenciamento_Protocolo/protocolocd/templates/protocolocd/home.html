@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS do Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- JS do Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+
+    <style>
+        /* Fundo geral com um gradiente suave */
+        body {
+            background: linear-gradient(135deg, #87CEEB, #4682B4);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #333;
+        }
+
+        /* Estilização da navbar */
+        .navbar {
+            background-color: #0000FF !important;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #f7f7f7 !important;
+            background-color: #273197;
+            border-radius: 10px;
+            padding-inline-start: 10px;
+            padding-inline-end: 10px;
+        }
+        .navbar .btn {
+            color: #ffffff;
+            background-color: #4e34e5;
+        }
+        
+        /* Estilização do container principal */
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            
+        }
+
+        /* Cartões de protocolos */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .card-title {
+            color: #004080;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        .card-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .btn-outline-primary {
+            border-color: #004080;
+            color: #004080;
+        }
+        .btn-outline-primary:hover {
+            background-color: #004080;
+            color: #fff;
+        }
+
+        /* Cabeçalho */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #004080;
+        }
+
+        /* Modal de filtros */
+        .modal-header {
+            background-color: #004080;
+            color: #fff;
+        }
+        .modal-footer .btn-success {
+            background-color: #004080;
+            border-color: #004080;
+        }
+
+        /* Mensagem de ausência de protocolos */
+        p.text-center {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary mb-4">
+        <img src="https://imgs.search.brave.com/3nJl0be6aB49Ne5-O0f-NA7VOcx9KY1zG5jy6sHlUdU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWdh/bGlua2ludGVybmV0/LmNvbS5ici9wYi93/cC1jb250ZW50L3Vw/bG9hZHMvMjAyMS8x/Mi9sb2dvLXByaW5j/aXBhbC0xMDI0eDU5/MS5wbmc" alt="Logo da empresa" style="width: 200px; height: auto; ">
+        <div class="container">
+            
+            <a class="navbar-brand text-white fw-bold" href="{% url 'gestao_protocolos' %}">Gestão de Protocolos - NOC TX</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon text-white"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-light fw-bold" href="/admin/protocolocd/protocolo/add/">Novo Protocolo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+
+    <!-- Conteúdo Principal -->
+    <div class="container">
+        <h1 class="text-center mb-4">Protocolos Criados</h1>
+        <div class="row justify-content-center">
+            {% for protocolo in protocolos %}
+            <div class="col-12 col-md-5 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">{{ protocolo.titulo }}</h5>
+                        <p class="card-text">
+                            <strong>Protocolo:</strong> {{ protocolo.numero_chamado_interno }}<br>
+                            <strong>Trecho:</strong> {{ protocolo.trecho }}<br>
+                            <strong>Tipo de Rede:</strong> {{ protocolo.tipo_rede }}<br>
+                            <strong>Tipo de Evento:</strong> {{ protocolo.tipo_evento }}<br>
+                            <strong>Data-Hora:</strong> {{ protocolo.data_hora_falha }}
+                        </p>
+                        <div class="card {% if protocolo.ativo %}bg-success text-white{% else %}bg-danger text-white{% endif %} mb-3">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <a href="{% url 'detalhes_protocolo' protocolo.id %}" class="btn btn-outline-light">Ver Detalhes</a>
+                                <small>
+                                    {% if protocolo.ativo %}
+                                        Em Atividade
+                                    {% else %}
+                                        Finalizado: {{ protocolo.atendimento.data_fechamento|date:"d/m/Y H:i" }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">Nenhum protocolo foi encontrado com os filtros aplicados.</p>
+            {% endfor %}
+        </div>
+        
+
+    <!-- Modal de Filtros -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+            <div class="modal-header" style="background-color: #273197; color: #fff; padding: 15px; border-bottom: none; border-radius: 8px 8px 0 0;">
+                <h5 class="modal-title" id="filterModalLabel" style="margin: 0; font-size: 18px;">Filtros de Protocolos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background: none; border: none; color: #fff; font-size: 18px; cursor: pointer;">&times;</button>
+            </div>
+            <form method="GET" action="{% url 'home' %}" style="padding: 20px; background-color: #f9f9f9;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label for="numero_chamado_interno" style="font-size: 14px; color: #555;">Número Chamado Interno:</label>
+                        <input type="text" name="numero_chamado_interno" id="numero_chamado_interno" 
+                               value="{{ request.GET.numero_chamado_interno }}" 
+                               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
+                               oninput="filterTable()">
+                    </div>
+        
+                    <div style="position: relative;">
+                        <label for="trecho" style="font-size: 14px; color: #555;">Trecho:</label>
+                        <input type="text" name="trecho" id="trecho" 
+                               value="{{ request.GET.trecho }}" 
+                               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
+                               oninput="filterDropdown()">
+                        
+                        <select id="trechoDropdown" size="5" 
+                                style="position: absolute; width: 100%; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; display: none; background: white; z-index: 1000;">
+                            <!-- As opções serão preenchidas dinamicamente -->
+                        </select>
+                    </div>
+        
+                    <div>
+                        <label for="tipo_rede" style="font-size: 14px; color: #555;">Tipo de Rede:</label>
+                        <select name="tipo_rede" id="tipo_rede" 
+                                style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;" 
+                                onchange="filterTable()">
+                            <option value="" {% if not request.GET.tipo_rede %}selected{% endif %}>Selecione um tipo de rede</option>
+                            <option value="METRO" {% if request.GET.tipo_rede == "METRO" %}selected{% endif %}>Rede Metro</option>
+                            <option value="DWDM" {% if request.GET.tipo_rede == "DWDM" %}selected{% endif %}>Rede DWDM</option>
+                            <option value="CAPACIDADE" {% if request.GET.tipo_rede == "CAPACIDADE" %}selected{% endif %}>Capacidade</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="tipo_evento" style="font-size: 14px; color: #555;">Tipo de Evento:</label>
+                        <select name="tipo_evento" id="tipo_evento" 
+                                style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+                            <option value="" {% if not request.GET.tipo_evento %}selected{% endif %}>Selecione um tipo de evento</option>
+                            <option value="RUPTURA" {% if request.GET.tipo_evento == 'RUPTURA' %}selected{% endif %}>Ruptura</option>
+                            <option value="ATENUAÇÃO" {% if request.GET.tipo_evento == 'ATENUAÇÃO' %}selected{% endif %}>Atenuação</option>
+                            <option value="INDISPONIBILIDADE" {% if request.GET.tipo_evento == 'INDISPONIBILIDADE' %}selected{% endif %}>Indisponibilidade</option>
+                            <option value="TAXA DE ERRO" {% if request.GET.tipo_evento == 'TAXA DE ERRO' %}selected{% endif %}>Taxa de Erro</option>
+                            <option value="OSCILACAO" {% if request.GET.tipo_evento == 'OSCILACAO' %}selected{% endif %}>Oscilação</option>
+                            <option value="FALHA ELÉTRICA" {% if request.GET.tipo_evento == 'FALHA ELÉTRICA' %}selected{% endif %}>Falha Elétrica</option>
+                            <option value="OUTRAS" {% if request.GET.tipo_evento == 'OUTRAS' %}selected{% endif %}>Outros</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label for="data_inicio" style="font-size: 14px; color: #555;">Data Início:</label>
+                            <input type="date" name="data_inicio" id="data_inicio" 
+                                   value="{{ request.GET.data_inicio }}" 
+                                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
+                                   oninput="filterTable()">
+                        </div>
+                        
+                        <div style="flex: 1;">
+                            <label for="data_fim" style="font-size: 14px; color: #555;">Data Fim:</label>
+                            <input type="date" name="data_fim" id="data_fim" 
+                                   value="{{ request.GET.data_fim }}" 
+                                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
+                                   oninput="filterTable()">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size: 14px; color: #555;">Status:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <div>
+                                <input type="checkbox" name="ativo" id="ativo" value="true" 
+                                       {% if request.GET.ativo == 'true' %}checked{% endif %}>
+                                <label for="ativo" style="font-size: 14px; color: #555;">Ativo</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="inativo" id="inativo" value="false" 
+                                       {% if request.GET.inativo == 'false' %}checked{% endif %}>
+                                <label for="inativo" style="font-size: 14px; color: #555;">Inativo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button type="submit" style="background-color: #273197; color: #fff; padding: 10px 20px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer;">Filtrar</button>
+                </div>
+            </form>
+        
+            <!-- Lista de Protocolos -->
+            <div style="padding: 20px;">
+                <table id="protocolosTable" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #273197; color: #fff; text-align: left;">
+                            <th style="padding: 10px; border: 1px solid #ddd;">Número Chamado Interno</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Trecho</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Tipo de Rede</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Data de Criação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for protocolo in protocolos %}
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.numero_chamado_interno }}</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.trecho }}</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.tipo_rede }}</td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.data_criacao }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="padding: 10px; border: 1px solid #ddd; text-align: center;">Nenhum protocolo encontrado.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+</div>
+    <script>function filterTable() {
+        const numeroChamado = document.getElementById("numero_chamado_interno").value.toLowerCase();
+        const trecho = document.getElementById("trecho").value.toLowerCase();
+        const tipoRede = document.getElementById("tipo_rede").value.toLowerCase();
+    
+        const table = document.getElementById("protocolosTable");
+        const rows = table.getElementsByTagName("tr");
+    
+        for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName("td");
+            const numeroCell = cells[0]?.textContent.toLowerCase() || "";
+            const trechoCell = cells[1]?.textContent.toLowerCase() || "";
+            const tipoCell = cells[2]?.textContent.toLowerCase() || "";
+    
+            rows[i].style.display =
+                (numeroCell.includes(numeroChamado) &&
+                trechoCell.includes(trecho) &&
+                tipoCell.includes(tipoRede))
+                    ? ""
+                    : "none";
+        }
+    }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicialize os campos com Select2
+            $('.js-select2').select2({
+                placeholder: "Digite ou selecione uma opção",
+                allowClear: true,
+            });
+        });
+    </script>
+    
+</body>
+</html>
