@@ -7,303 +7,808 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- CSS do Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Fonte moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- JS do Select2 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
 
     <style>
-        /* Fundo geral com um gradiente suave */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #3b82f6;
+            --accent: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --background: #f9fafb;
+            --surface: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-light: #9ca3af;
+            --border-radius-sm: 6px;
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --transition: all 0.2s ease;
+        }
+
+        /* Estilos base */
         body {
-            background: linear-gradient(135deg, #87CEEB, #4682B4);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            color: #333;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Cabeçalho e tipografia */
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        h5.card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
         }
 
         /* Estilização da navbar */
         .navbar {
-            background-color: #0000FF !important;
+            background-color: var(--surface) !important;
+            box-shadow: var(--shadow);
+            padding: 0.75rem 0;
         }
+
         .navbar-brand {
-            font-weight: bold;
-            color: #f7f7f7 !important;
-            background-color: #273197;
-            border-radius: 10px;
-            padding-inline-start: 10px;
-            padding-inline-end: 10px;
+            font-weight: 700;
+            color: var(--primary) !important;
+            background-color: rgba(219, 234, 254, 0.4);
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
         }
+
+        .navbar-brand:hover {
+            background-color: rgba(219, 234, 254, 0.6);
+            transform: translateY(-1px);
+        }
+
         .navbar .btn {
-            color: #ffffff;
-            background-color: #4e34e5;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .navbar .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .navbar .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar .btn-outline-primary {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .navbar .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Logo container */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+        }
+
+        .logo-container img {
+            max-height: 40px;
+            width: auto;
+            transition: var(--transition);
+            border-radius: var(--border-radius-sm);
         }
         
         /* Estilização do container principal */
-        .container {
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-            
+        .main-container {
+            background-color: var(--surface);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            margin: 2rem auto;
+            max-width: 1200px;
         }
 
-        /* Cartões de protocolos */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-        .card-title {
-            color: #004080;
-            font-weight: bold;
-            font-size: 1.25rem;
-        }
-        .card-text {
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .btn-outline-primary {
-            border-color: #004080;
-            color: #004080;
-        }
-        .btn-outline-primary:hover {
-            background-color: #004080;
-            color: #fff;
-        }
+       /* Estilos para o cartão de protocolo */
+.protocol-card {
+    background-color: var(--surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
-        /* Cabeçalho */
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #004080;
-        }
+.protocol-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Cabeçalho do cartão */
+.card-header {
+    background-color: #f8f9fa;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin: 0;
+    line-height: 1.3;
+}
+
+/* Corpo do cartão */
+.card-body {
+    padding: 1.25rem;
+    flex-grow: 1;
+}
+
+/* Grid para as informações */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed #e9ecef;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.info-value {
+    text-align: right;
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+/* Rodapé do cartão */
+.card-footer {
+    padding: 1rem 1.25rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* Badges para status */
+.protocol-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.badge-active {
+    background-color: #10b981;
+    color: white;
+}
+
+.badge-inactive {
+    background-color: #6c757d;
+    color: white;
+}
+
+.protocol-badge i {
+    font-size: 0.7rem;
+    margin-right: 0.35rem;
+}
+
+/* Botão de detalhes */
+.btn-view-details {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.btn-view-details:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-view-details i {
+    margin-right: 0.4rem;
+}
+
+/* Responsividade */
+@media (min-width: 576px) {
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem 1.5rem;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .info-value {
+        text-align: left;
+        margin-top: 0.25rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .protocol-badge {
+        align-self: flex-start;
+        margin-top: 0.5rem;
+    }
+}
 
         /* Modal de filtros */
-        .modal-header {
-            background-color: #004080;
-            color: #fff;
-        }
-        .modal-footer .btn-success {
-            background-color: #004080;
-            border-color: #004080;
+        .modal-content {
+            border: none;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
         }
 
-        /* Mensagem de ausência de protocolos */
-        p.text-center {
-            font-size: 1.2rem;
-            color: #555;
+        .modal-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: -0.01em;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            background-color: var(--background);
+        }
+
+        .btn-close {
+            color: white;
+            text-shadow: none;
+            opacity: 0.8;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+
+        /* Estilização de formulários */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control {
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #e5e7eb;
+            padding: 0.625rem 0.875rem;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: var(--surface);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+
+        .form-select {
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #e5e7eb;
+            padding: 0.625rem 2rem 0.625rem 0.875rem;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: var(--surface);
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+
+        .form-check-input {
+            margin-top: 0.25rem;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-filter {
+            background-color: var(--primary);
+            border: none;
+            color: white;
+            border-radius: var(--border-radius-sm);
+            padding: 0.625rem 1.25rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-filter:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Tabela estilizada */
+        .table-container {
+            margin-top: 1.5rem;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .protocols-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.9rem;
+        }
+
+        .protocols-table thead th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+            text-align: left;
+            padding: 0.875rem 1rem;
+            border: none;
+        }
+
+        .protocols-table thead th:first-child {
+            border-top-left-radius: var(--border-radius-sm);
+        }
+
+        .protocols-table thead th:last-child {
+            border-top-right-radius: var(--border-radius-sm);
+        }
+
+        .protocols-table tbody td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: var(--surface);
+        }
+
+        .protocols-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .protocols-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: var(--border-radius-sm);
+        }
+
+        .protocols-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: var(--border-radius-sm);
+        }
+
+        .protocols-table tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+
+        /* Dropdown estilizado */
+        .dropdown-results {
+            position: absolute;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: var(--surface);
+            border: 1px solid #e5e7eb;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+            display: none;
+        }
+
+        .dropdown-item {
+            padding: 0.625rem 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Utilitários para espaçamento e flex */
+        .d-flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .gap-3 {
+            gap: 0.75rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsividade adicional */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .protocol-card .card-body {
+                padding: 1.25rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-container {
+                padding: 1.25rem;
+                margin: 0.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .protocol-card .card-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Animações sutis */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
         }
         
+        /* Personalização Select2 */
+        .select2-container--default .select2-selection--single {
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #e5e7eb;
+            height: calc(2.5rem + 2px);
+            display: flex;
+            align-items: center;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+        }
+
+        .select2-dropdown {
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #e5e7eb;
+            box-shadow: var(--shadow-sm);
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-primary mb-4">
-        <img src="https://imgs.search.brave.com/3nJl0be6aB49Ne5-O0f-NA7VOcx9KY1zG5jy6sHlUdU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWdh/bGlua2ludGVybmV0/LmNvbS5ici9wYi93/cC1jb250ZW50L3Vw/bG9hZHMvMjAyMS8x/Mi9sb2dvLXByaW5j/aXBhbC0xMDI0eDU5/MS5wbmc" alt="Logo da empresa" style="width: 200px; height: auto; ">
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
         <div class="container">
-            
-            <a class="navbar-brand text-white fw-bold" href="{% url 'gestao_protocolos' %}">Gestão de Protocolos - NOC TX</a>
+            <div class="d-flex align-items-center">
+                <div class="logo-container me-3">
+                    <img src="https://imgs.search.brave.com/3nJl0be6aB49Ne5-O0f-NA7VOcx9KY1zG5jy6sHlUdU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWdh/bGlua2ludGVybmV0/LmNvbS5ici9wYi93/cC1jb250ZW50L3Vw/bG9hZHMvMjAyMS8x/Mi9sb2dvLXByaW5j/aXBhbC0xMDI0eDU5/MS5wbmc" alt="Logo da empresa" class="img-fluid">
+                </div>
+                <a class="navbar-brand" href="{% url 'gestao_protocolos' %}">Gestão de Protocolos - NOC TX</a>
+            </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon text-white"></span>
+                <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#filterModal">Filtros</button>
+                    <li class="nav-item me-2">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+                            <i class="bi bi-funnel-fill me-1"></i> Filtros
+                        </button>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-light fw-bold" href="/admin/protocolocd/protocolo/add/">Novo Protocolo</a>
+                        <a class="btn btn-primary" href="/admin/protocolocd/protocolo/add/">
+                            <i class="bi bi-plus-lg me-1"></i> Novo Protocolo
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
     
-
     <!-- Conteúdo Principal -->
-    <div class="container">
-        <h1 class="text-center mb-4">Protocolos Criados</h1>
-        <div class="row justify-content-center">
+    <div class="container main-container fade-in">
+        <h1 class="text-center"><i class="bi bi-clipboard-data me-2"></i>Protocolos Criados</h1>
+        <div class="row g-4 justify-content-center">
             {% for protocolo in protocolos %}
-            <div class="col-12 col-md-5 mb-4">
-                <div class="card">
+            <div class="col-12 col-md-6 col-lg-4">
+                
+                <div class="protocol-card">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ protocolo.titulo }}</h5>
+                        <span class="protocol-badge {% if protocolo.ativo %}badge-active{% else %}badge-inactive{% endif %}">
+                            {% if protocolo.ativo %}
+                                <i class="bi bi-circle-fill"></i> Em Atividade
+                            {% else %}
+                                <i class="bi bi-check-circle-fill"></i> Finalizado
+                            {% endif %}
+                        </span>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title text-center">{{ protocolo.titulo }}</h5>
-                        <p class="card-text">
-                            <strong>Protocolo:</strong> {{ protocolo.numero_chamado_interno }}<br>
-                            <strong>Trecho:</strong> {{ protocolo.trecho }}<br>
-                            <strong>Tipo de Rede:</strong> {{ protocolo.tipo_rede }}<br>
-                            <strong>Tipo de Evento:</strong> {{ protocolo.tipo_evento }}<br>
-                            <strong>Data-Hora:</strong> {{ protocolo.data_hora_falha }}
-                        </p>
-                        <div class="card {% if protocolo.ativo %}bg-success text-white{% else %}bg-danger text-white{% endif %} mb-3">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <a href="{% url 'detalhes_protocolo' protocolo.id %}" class="btn btn-outline-light">Ver Detalhes</a>
-                                <small>
-                                    {% if protocolo.ativo %}
-                                        Em Atividade
-                                    {% else %}
-                                        Finalizado: {{ protocolo.atendimento.data_fechamento|date:"d/m/Y H:i" }}
-                                    {% endif %}
-                                </small>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Protocolo:</span>
+                                <span class="info-value">{{ protocolo.numero_chamado_interno }}</span>
                             </div>
+                            <div class="info-item">
+                                <span class="info-label">Trecho:</span>
+                                <span class="info-value">{{ protocolo.trecho }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tipo de Rede:</span>
+                                <span class="info-value">{{ protocolo.tipo_rede }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tipo de Evento:</span>
+                                <span class="info-value">{{ protocolo.tipo_evento }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Data-Hora:</span>
+                                <span class="info-value">{{ protocolo.data_hora_falha }}</span>
+                            </div>
+                            {% if not protocolo.ativo %}
+                            <div class="info-item">
+                                <span class="info-label">Finalizado:</span>
+                                <span class="info-value">{{ protocolo.atendimento.data_fechamento|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            {% endif %}
                         </div>
-                        
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'detalhes_protocolo' protocolo.id %}" class="btn-view-details">
+                            <i class="bi bi-eye"></i> Ver Detalhes
+                        </a>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <p class="text-center">Nenhum protocolo foi encontrado com os filtros aplicados.</p>
+            <div class="col-12 text-center mt-4">
+                <div class="p-4 bg-light rounded">
+                    <i class="bi bi-search" style="font-size: 3rem; color: var(--text-light);"></i>
+                    <p class="mt-3 text-secondary">Nenhum protocolo foi encontrado com os filtros aplicados.</p>
+                </div>
+            </div>
             {% endfor %}
         </div>
-        
+    </div>
 
     <!-- Modal de Filtros -->
-<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content" style="border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
-            <div class="modal-header" style="background-color: #273197; color: #fff; padding: 15px; border-bottom: none; border-radius: 8px 8px 0 0;">
-                <h5 class="modal-title" id="filterModalLabel" style="margin: 0; font-size: 18px;">Filtros de Protocolos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background: none; border: none; color: #fff; font-size: 18px; cursor: pointer;">&times;</button>
-            </div>
-            <form method="GET" action="{% url 'home' %}" style="padding: 20px; background-color: #f9f9f9;">
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <div>
-                        <label for="numero_chamado_interno" style="font-size: 14px; color: #555;">Número Chamado Interno:</label>
-                        <input type="text" name="numero_chamado_interno" id="numero_chamado_interno" 
-                               value="{{ request.GET.numero_chamado_interno }}" 
-                               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
-                               oninput="filterTable()">
-                    </div>
-        
-                    <div style="position: relative;">
-                        <label for="trecho" style="font-size: 14px; color: #555;">Trecho:</label>
-                        <input type="text" name="trecho" id="trecho" 
-                               value="{{ request.GET.trecho }}" 
-                               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
-                               oninput="filterDropdown()">
-                        
-                        <select id="trechoDropdown" size="5" 
-                                style="position: absolute; width: 100%; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; display: none; background: white; z-index: 1000;">
-                            <!-- As opções serão preenchidas dinamicamente -->
-                        </select>
-                    </div>
-        
-                    <div>
-                        <label for="tipo_rede" style="font-size: 14px; color: #555;">Tipo de Rede:</label>
-                        <select name="tipo_rede" id="tipo_rede" 
-                                style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;" 
-                                onchange="filterTable()">
-                            <option value="" {% if not request.GET.tipo_rede %}selected{% endif %}>Selecione um tipo de rede</option>
-                            <option value="METRO" {% if request.GET.tipo_rede == "METRO" %}selected{% endif %}>Rede Metro</option>
-                            <option value="DWDM" {% if request.GET.tipo_rede == "DWDM" %}selected{% endif %}>Rede DWDM</option>
-                            <option value="CAPACIDADE" {% if request.GET.tipo_rede == "CAPACIDADE" %}selected{% endif %}>Capacidade</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label for="tipo_evento" style="font-size: 14px; color: #555;">Tipo de Evento:</label>
-                        <select name="tipo_evento" id="tipo_evento" 
-                                style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
-                            <option value="" {% if not request.GET.tipo_evento %}selected{% endif %}>Selecione um tipo de evento</option>
-                            <option value="RUPTURA" {% if request.GET.tipo_evento == 'RUPTURA' %}selected{% endif %}>Ruptura</option>
-                            <option value="ATENUAÇÃO" {% if request.GET.tipo_evento == 'ATENUAÇÃO' %}selected{% endif %}>Atenuação</option>
-                            <option value="INDISPONIBILIDADE" {% if request.GET.tipo_evento == 'INDISPONIBILIDADE' %}selected{% endif %}>Indisponibilidade</option>
-                            <option value="TAXA DE ERRO" {% if request.GET.tipo_evento == 'TAXA DE ERRO' %}selected{% endif %}>Taxa de Erro</option>
-                            <option value="OSCILACAO" {% if request.GET.tipo_evento == 'OSCILACAO' %}selected{% endif %}>Oscilação</option>
-                            <option value="FALHA ELÉTRICA" {% if request.GET.tipo_evento == 'FALHA ELÉTRICA' %}selected{% endif %}>Falha Elétrica</option>
-                            <option value="OUTRAS" {% if request.GET.tipo_evento == 'OUTRAS' %}selected{% endif %}>Outros</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex: 1;">
-                            <label for="data_inicio" style="font-size: 14px; color: #555;">Data Início:</label>
-                            <input type="date" name="data_inicio" id="data_inicio" 
-                                   value="{{ request.GET.data_inicio }}" 
-                                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
-                                   oninput="filterTable()">
-                        </div>
-                        
-                        <div style="flex: 1;">
-                            <label for="data_fim" style="font-size: 14px; color: #555;">Data Fim:</label>
-                            <input type="date" name="data_fim" id="data_fim" 
-                                   value="{{ request.GET.data_fim }}" 
-                                   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;"
-                                   oninput="filterTable()">
-                        </div>
-                    </div>
-                    <div>
-                        <label style="font-size: 14px; color: #555;">Status:</label>
-                        <div style="display: flex; gap: 10px;">
-                            <div>
-                                <input type="checkbox" name="ativo" id="ativo" value="true" 
-                                       {% if request.GET.ativo == 'true' %}checked{% endif %}>
-                                <label for="ativo" style="font-size: 14px; color: #555;">Ativo</label>
-                            </div>
-                            <div>
-                                <input type="checkbox" name="inativo" id="inativo" value="false" 
-                                       {% if request.GET.inativo == 'false' %}checked{% endif %}>
-                                <label for="inativo" style="font-size: 14px; color: #555;">Inativo</label>
-                            </div>
-                        </div>
-                    </div>
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filterModalLabel">
+                        <i class="bi bi-funnel me-2"></i>Filtros de Protocolos
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body">
+                    <form method="GET" action="{% url 'home' %}">
+                        <div class="form-group">
+                            <label for="numero_chamado_interno" class="form-label">Número Chamado Interno:</label>
+                            <input type="text" name="numero_chamado_interno" id="numero_chamado_interno" 
+                                   value="{{ request.GET.numero_chamado_interno }}" 
+                                   class="form-control"
+                                   oninput="filterTable()">
+                        </div>
+            
+                        <div class="form-group position-relative">
+                            <label for="trecho" class="form-label">Trecho:</label>
+                            <input type="text" name="trecho" id="trecho" 
+                                   value="{{ request.GET.trecho }}" 
+                                   class="form-control"
+                                   oninput="filterDropdown()">
+                            
+                            <select id="trechoDropdown" size="5" class="dropdown-results">
+                                <!-- As opções serão preenchidas dinamicamente -->
+                            </select>
+                        </div>
+            
+                        <div class="form-group">
+                            <label for="tipo_rede" class="form-label">Tipo de Rede:</label>
+                            <select name="tipo_rede" id="tipo_rede" 
+                                    class="form-select"
+                                    onchange="filterTable()">
+                                <option value="" {% if not request.GET.tipo_rede %}selected{% endif %}>Selecione um tipo de rede</option>
+                                <option value="METRO" {% if request.GET.tipo_rede == "METRO" %}selected{% endif %}>Rede Metro</option>
+                                <option value="DWDM" {% if request.GET.tipo_rede == "DWDM" %}selected{% endif %}>Rede DWDM</option>
+                                <option value="CAPACIDADE" {% if request.GET.tipo_rede == "CAPACIDADE" %}selected{% endif %}>Capacidade</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipo_evento" class="form-label">Tipo de Evento:</label>
+                            <select name="tipo_evento" id="tipo_evento" class="form-select">
+                                <option value="" {% if not request.GET.tipo_evento %}selected{% endif %}>Selecione um tipo de evento</option>
+                                <option value="RUPTURA" {% if request.GET.tipo_evento == 'RUPTURA' %}selected{% endif %}>Ruptura</option>
+                                <option value="ATENUAÇÃO" {% if request.GET.tipo_evento == 'ATENUAÇÃO' %}selected{% endif %}>Atenuação</option>
+                                <option value="INDISPONIBILIDADE" {% if request.GET.tipo_evento == 'INDISPONIBILIDADE' %}selected{% endif %}>Indisponibilidade</option>
+                                <option value="TAXA DE ERRO" {% if request.GET.tipo_evento == 'TAXA DE ERRO' %}selected{% endif %}>Taxa de Erro</option>
+                                <option value="OSCILACAO" {% if request.GET.tipo_evento == 'OSCILACAO' %}selected{% endif %}>Oscilação</option>
+                                <option value="FALHA ELÉTRICA" {% if request.GET.tipo_evento == 'FALHA ELÉTRICA' %}selected{% endif %}>Falha Elétrica</option>
+                                <option value="OUTRAS" {% if request.GET.tipo_evento == 'OUTRAS' %}selected{% endif %}>Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="data_inicio" class="form-label">Data Início:</label>
+                                <input type="date" name="data_inicio" id="data_inicio" 
+                                       value="{{ request.GET.data_inicio }}" 
+                                       class="form-control"
+                                       oninput="filterTable()">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="data_fim" class="form-label">Data Fim:</label>
+                                <input type="date" name="data_fim" id="data_fim" 
+                                       value="{{ request.GET.data_fim }}" 
+                                       class="form-control"
+                                       oninput="filterTable()">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Status:</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="ativo" id="ativo" value="true" 
+                                           class="form-check-input"
+                                           {% if request.GET.ativo == 'true' %}checked{% endif %}>
+                                    <label for="ativo" class="form-check-label">Ativo</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" name="inativo" id="inativo" value="false" 
+                                           class="form-check-input"
+                                           {% if request.GET.inativo == 'false' %}checked{% endif %}>
+                                    <label for="inativo" class="form-check-label">Inativo</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn-filter">
+                                <i class="bi bi-funnel me-1"></i> Aplicar Filtros
+                            </button>
+                        </div>
+                    </form>
                 
-                <div style="margin-top: 20px; text-align: center;">
-                    <button type="submit" style="background-color: #273197; color: #fff; padding: 10px 20px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer;">Filtrar</button>
+                    <!-- Lista de Protocolos -->
+                    <div class="table-container mt-4">
+                        <table id="protocolosTable" class="protocols-table">
+                            <thead>
+                                <tr>
+                                    <th>Número Chamado</th>
+                                    <th>Trecho</th>
+                                    <th>Tipo de Rede</th>
+                                    <th>Data de Criação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for protocolo in protocolos %}
+                                    <tr>
+                                        <td>{{ protocolo.numero_chamado_interno }}</td>
+                                        <td>{{ protocolo.trecho }}</td>
+                                        <td>{{ protocolo.tipo_rede }}</td>
+                                        <td>{{ protocolo.data_criacao }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">Nenhum protocolo encontrado.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </form>
-        
-            <!-- Lista de Protocolos -->
-            <div style="padding: 20px;">
-                <table id="protocolosTable" style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                    <thead>
-                        <tr style="background-color: #273197; color: #fff; text-align: left;">
-                            <th style="padding: 10px; border: 1px solid #ddd;">Número Chamado Interno</th>
-                            <th style="padding: 10px; border: 1px solid #ddd;">Trecho</th>
-                            <th style="padding: 10px; border: 1px solid #ddd;">Tipo de Rede</th>
-                            <th style="padding: 10px; border: 1px solid #ddd;">Data de Criação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for protocolo in protocolos %}
-                            <tr>
-                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.numero_chamado_interno }}</td>
-                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.trecho }}</td>
-                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.tipo_rede }}</td>
-                                <td style="padding: 10px; border: 1px solid #ddd;">{{ protocolo.data_criacao }}</td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="4" style="padding: 10px; border: 1px solid #ddd; text-align: center;">Nenhum protocolo encontrado.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
         </div>
-        
     </div>
-</div>
-    <script>function filterTable() {
+
+    <script>
+    function filterTable() {
         const numeroChamado = document.getElementById("numero_chamado_interno").value.toLowerCase();
         const trecho = document.getElementById("trecho").value.toLowerCase();
         const tipoRede = document.getElementById("tipo_rede").value.toLowerCase();
-    
+
         const table = document.getElementById("protocolosTable");
         const rows = table.getElementsByTagName("tr");
-    
+
         for (let i = 1; i < rows.length; i++) {
             const cells = rows[i].getElementsByTagName("td");
             const numeroCell = cells[0]?.textContent.toLowerCase() || "";
             const trechoCell = cells[1]?.textContent.toLowerCase() || "";
             const tipoCell = cells[2]?.textContent.toLowerCase() || "";
-    
+
             rows[i].style.display =
                 (numeroCell.includes(numeroChamado) &&
                 trechoCell.includes(trecho) &&
@@ -312,18 +817,28 @@
                     : "none";
         }
     }
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Inicialize os campos com Select2
+    document.addEventListener("DOMContentLoaded", function() {
+        // Inicialize os campos com Select2 se jQuery estiver disponível
+        if (typeof $ !== 'undefined') {
             $('.js-select2').select2({
                 placeholder: "Digite ou selecione uma opção",
                 allowClear: true,
+                theme: "bootstrap-5",
             });
+        }
+        
+        // Adicione efeito de "fade in" nos cards
+        const cards = document.querySelectorAll('.protocol-card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.animation = `fadeIn 0.3s ease forwards ${index * 0.1}s`;
+            }, 100);
         });
+    });
     </script>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -51,4 +51,4 @@ class Command(BaseCommand):
         return text
     
 # Para usar o comando:
-#python manage.py importar_trechos protocolocd/management/a.csv
+#python3 manage.py importar_trechos protocolocd/management/a.csv

@@ -47,7 +47,7 @@ def new_token():
         raise Exception(f"Erro ao obter token: {response.text}")
 
 # Função para criar atendimento
-def new_atendimento(id_cliente_servico, descricao, nome, telefone, id_tipo_atendimento):
+def new_atendimento(id_cliente_servico, descricao, nome, telefone, id_tipo_atendimento, id_atendimento_status, id_usuario_responsavel):
     # Obter o token
     if not token_primordial:
         new_token()
@@ -59,8 +59,9 @@ def new_atendimento(id_cliente_servico, descricao, nome, telefone, id_tipo_atend
         "descricao": descricao,
         "nome": nome,
         "telefone": telefone,
-        "id_tipo_atendimento": id_tipo_atendimento
-        
+        "id_tipo_atendimento": id_tipo_atendimento,
+        "id_atendimento_status": id_atendimento_status,
+        "id_usuario_responsavel": id_usuario_responsavel
     }
     headers = {
         "Authorization": f"Bearer {token}"
@@ -159,7 +160,11 @@ class Protocolo(models.Model):
         (669, 'NOC TX > OUTROS'),
         (671, 'NOC TX > RUPTURA MEGALINK'),
     ]
-
+    status_atendimento_choices = [
+        (1, 'PENDENTE (Abertura de OS)'),
+        (2, 'AGUARDANDO ANALISE'),
+    ]
+    pop_trecho = models.ForeignKey('Servico', on_delete=models.SET_NULL, null=True, blank=True, related_name='protocolos_pop_trecho', verbose_name="POP/Trecho")
     trecho = models.ForeignKey('Trecho', on_delete=models.CASCADE, verbose_name="Trecho")
     
     tipo_rede = models.CharField(max_length=100, choices=TIPOS_REDE)
@@ -168,6 +173,7 @@ class Protocolo(models.Model):
     nome_pop_a = models.CharField(max_length=100)
     nome_pop_b = models.CharField(max_length=100)
     nome_responsavel = models.CharField(max_length=100, default='Megalink')
+    responsavel_atendimento = models.ForeignKey('Responsavel', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Responsável pelo Atendimento")
     numero_chamado_os = models.CharField(max_length=50)
     tipo_evento = models.CharField(max_length=20, choices=TIPOS_EVENTO)
     site_a = models.CharField(max_length=100)
@@ -191,6 +197,10 @@ class Protocolo(models.Model):
         default=660
     )
     ativo = models.BooleanField(default=True)
+    
+    status_atendimento = models.IntegerField(default=2, choices=status_atendimento_choices)
+    
+    
     class Meta:
         ordering = ['trecho']
     def gerar_titulo(self):
@@ -222,8 +232,20 @@ class Protocolo(models.Model):
             try:
                 # Use um bloco separado para garantir a consistência
                 with transaction.atomic():
+                    # Pega o id_cliente_servico do pop_trecho selecionado, ou usa um valor padrão se não for selecionado
+                    id_cliente_servico_para_usar = self.pop_trecho.id_cliente_servico if self.pop_trecho else 79856
+                    
+                    # Define o nome e telefone do responsável
+                    nome_responsavel = self.nome_responsavel  # Valor padrão
+                    telefone_responsavel = 86999998888  # Valor padrão
+                    
+                    # Se um responsável pelo atendimento foi selecionado, use seus dados
+                    if self.responsavel_atendimento:
+                        nome_responsavel = self.responsavel_atendimento.nome
+                        telefone_responsavel = self.responsavel_atendimento.telefone
+                    
                     atendimento_data = new_atendimento(
-                        id_cliente_servico=79856,
+                        id_cliente_servico=id_cliente_servico_para_usar,
                         descricao= f"""
                         Titulo: {self.titulo}\n
                         Trecho: {self.trecho}\n
@@ -242,9 +264,11 @@ class Protocolo(models.Model):
                         Número do Chamado OS: {self.numero_chamado_os}\n
                         Protocolo Parceiro: {self.protocolo_parceiro}
                         """,
-                        nome=self.nome_responsavel,
-                        telefone=86999998888,
-                        id_tipo_atendimento = self.tipo_atendimento
+                        nome=nome_responsavel,
+                        telefone=telefone_responsavel,
+                        id_tipo_atendimento=self.tipo_atendimento,
+                        id_atendimento_status=self.status_atendimento,
+                        id_usuario_responsavel=self.responsavel_atendimento.id_hubsoft if self.responsavel_atendimento else None
                     )
                     
                     print(atendimento_data)
@@ -278,6 +302,12 @@ class Protocolo(models.Model):
                 print(f"Erro ao criar atendimento: {e}")
     def __str__(self):
         return f"Protocolo - {self.numero_chamado_interno} ({self.tipo_rede})"
+
+    def get_pop_trecho_info(self):
+        """Retorna informações sobre o POP/Trecho selecionado de forma legível."""
+        if self.pop_trecho:
+            return f"ID: {self.pop_trecho.id_cliente_servico} - {self.pop_trecho.get_descricao_resumida()}"
+        return "Não definido"
 
 
 
@@ -313,4 +343,72 @@ class DescricaoTrecho(models.Model):
         ordering = ['-data_criacao']
 
     def __str__(self):
-        return f"Descrição para {self.trecho.trecho} ({self.data_criacao})"
+        return f"Descrição de {self.trecho} em {self.data_criacao.strftime('%d/%m/%Y %H:%M')}"
+
+class Servico(models.Model):
+    id_cliente_servico = models.IntegerField(primary_key=True)
+    descricao = models.TextField(verbose_name="Descrição do Serviço")
+    
+    class Meta:
+        verbose_name = "Serviço"
+        verbose_name_plural = "Serviços"
+        ordering = ['id_cliente_servico']
+        db_table = 'protocolocd_servico'
+    
+    def get_descricao_resumida(self):
+        """Retorna uma versão resumida da descrição, limitada a 100 caracteres."""
+        if len(self.descricao) > 100:
+            return f"{self.descricao[:97]}..."
+        return self.descricao
+        
+    def __str__(self):
+        return f"Serviço #{self.id_cliente_servico} - {self.descricao[:100]}"
+
+class Responsavel(models.Model):
+    nome = models.CharField(max_length=100, verbose_name="Nome do Responsável")
+    telefone = models.CharField(max_length=15, verbose_name="Telefone", help_text="Formato: 86999998888")
+    email = models.EmailField(verbose_name="E-mail", blank=True, null=True)
+    ativo = models.BooleanField(default=True, verbose_name="Ativo")
+    id_hubsoft = models.IntegerField(verbose_name="ID Hubsoft", blank=True, null=True)
+    class Meta:
+        verbose_name = "Responsável"
+        verbose_name_plural = "Responsáveis"
+        ordering = ['nome']
+    
+    def __str__(self):
+        return f"{self.nome} ({self.telefone})"
+        
+
+class OrdemServico(models.Model):
+    STATUS_CHOICES = [
+        ('aguardando_agendamento', 'Aguardando Agendamento'),
+        ('agendado', 'Agendado'),
+        ('em_andamento', 'Em Andamento'),
+        ('concluido', 'Concluído'),
+        ('cancelado', 'Cancelado'),
+        # Adicione outros status conforme necessário
+    ]
+    
+    # Campos básicos da ordem de serviço
+    id_ordem_servico = models.IntegerField(unique=True)
+    id_atendimento = models.IntegerField()
+    tipo_ordem_servico = models.CharField(max_length=100)
+    numero_ordem_servico = models.CharField(max_length=100)
+    descricao_abertura = models.TextField()
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    data_cadastro = models.DateTimeField()
+    data_inicio_programado = models.DateTimeField()
+    data_termino_programado = models.DateTimeField()
+    
+    # Campos de cliente/serviço
+    cliente_servico_display = models.CharField(max_length=255)
+    cliente_servico_id = models.IntegerField()
+    cliente = models.CharField(max_length=255)
+    
+    # Campos para rastreamento da requisição
+    response_status = models.CharField(max_length=50)  # success, error, etc.
+    response_msg = models.CharField(max_length=255)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"OS {self.numero_ordem_servico} - {self.status}"

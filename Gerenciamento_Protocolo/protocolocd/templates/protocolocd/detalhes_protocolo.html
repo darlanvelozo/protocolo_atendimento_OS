@@ -6,56 +6,66 @@
     <title>Detalhes do Protocolo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilo do fundo */
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Arial', sans-serif;
-            color: #333;
+        :root {
+            --primary-color: #007BFF;
+            --secondary-color: #6c757d;
+            --background-color: #f4f6f9;
+            --text-color: #333;
+            --light-text-color: #6c757d;
+            --card-background: #fff;
+            --card-border-radius: 16px;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilo do cartão */
+        body {
+            background-color: var(--background-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+        }
+
         .card {
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--card-shadow);
             transition: transform 0.3s ease;
+            background-color: var(--card-background);
         }
 
         .card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
         }
 
         .card-body {
             padding: 2rem;
         }
 
-        /* Títulos e texto */
         h1, h3 {
-            color: #0069d9;
+            color: var(--primary-color);
         }
 
         p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.6;
         }
 
         .card-title {
             font-size: 1.5rem;
-            font-weight: bold;
-            color: #343a40;
+            font-weight: 700;
+            color: var(--text-color);
         }
 
-        /* Botões */
         .btn {
             border-radius: 8px;
             padding: 12px 25px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
+            transition: background-color 0.2s ease;
         }
 
         .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
         }
 
         .btn-secondary:hover {
@@ -63,10 +73,9 @@
             border-color: #545b62;
         }
 
-        /* Estilização da seção de Atendimento */
         .atendimento-section {
             background-color: #f1f3f5;
-            border-left: 6px solid #007bff;
+            border-left: 6px solid var(--primary-color);
             padding: 1.8rem;
             margin-top: 2rem;
             border-radius: 8px;
@@ -74,27 +83,25 @@
         }
 
         .atendimento-section h3 {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #007bff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
             margin-bottom: 1rem;
         }
 
         .atendimento-section p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.5;
         }
 
         .atendimento-section p strong {
-            color: #495057;
+            color: var(--text-color);
         }
 
-        /* Título centralizado */
         .container {
             margin-top: 50px;
         }
 
-        /* Estilização do link de retorno */
         .btn-return {
             background-color: #28a745;
             border-color: #28a745;
@@ -105,36 +112,30 @@
             border-color: #1e7e34;
         }
 
-        /* Espaço do texto */
         .card-text {
             margin-bottom: 1rem;
         }
-        /* Estilos para o botão */
-        .btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
+
+        .btn-update {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            text-align: center;
         }
 
-        .btn:hover {
-            background-color: #45a049;
+        .btn-update:hover {
+            background-color: #0056b3;
         }
 
-         /* Formulário suspenso */
-         #form-mensagem {
+        #form-mensagem {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: #fff;
+            background-color: var(--card-background);
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            border-radius: var(--card-border-radius);
             width: 350px;
             max-width: 90%;
             z-index: 1000;
@@ -145,27 +146,29 @@
             font-size: 1rem;
             margin-bottom: 8px;
             display: block;
-            color: #007BFF;
+            color: var(--primary-color);
         }
 
-        #form-mensagem input {
+        #form-mensagem textarea {
             width: 100%;
-            padding: 10px;
+            height: 150px;
+            padding: 12px;
             border: 1px solid #ccc;
             border-radius: 5px;
             margin-bottom: 15px;
             font-size: 1rem;
+            resize: vertical;
         }
 
         #form-mensagem button {
             width: 100%;
             padding: 12px;
-            background-color: #007BFF;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 5px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s ease-in-out;
         }
@@ -174,7 +177,6 @@
             background-color: #0056b3;
         }
 
-        /* Overlay escurecido */
         #overlay {
             display: none;
             position: fixed;
@@ -184,19 +186,19 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 999;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
-        /* Estilo do modal de alerta */
         #alert-modal {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: #fff;
+            background-color: var(--card-background);
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            border-radius: var(--card-border-radius);
             width: 300px;
             max-width: 90%;
             z-index: 1001;
@@ -206,24 +208,24 @@
 
         #alert-modal h4 {
             font-size: 1.2rem;
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 10px;
         }
 
         #alert-modal p {
             font-size: 1rem;
-            color: #555;
+            color: var(--light-text-color);
             margin-bottom: 20px;
         }
 
         #alert-modal .btn {
-            background-color: #007BFF;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 5px;
             padding: 10px 20px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
         }
 
@@ -231,7 +233,6 @@
             background-color: #0056b3;
         }
 
-        /* Animação */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -243,29 +244,29 @@
             }
         }
 
-        /* Estilização das mensagens */
-ul {
-    list-style-type: none; /* Remove os marcadores padrão da lista */
-    padding: 0;
-}
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
 
-ul li {
-    background-color: #f8f9fa; /* Fundo leve para contraste */
-    border: 1px solid #dee2e6; /* Borda sutil */
-    border-radius: 8px; /* Arredondamento */
-    padding: 15px;
-    margin-bottom: 10px; /* Espaçamento entre mensagens */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
-}
+        ul li {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
 
-ul li strong {
-    color: #007bff; /* Cor azul para destacar o usuário */
-}
+        ul li strong {
+            color: var(--primary-color);
+        }
 
-ul li:hover {
-    background-color: #e9ecef; /* Fundo ao passar o mouse */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Realce ao passar o mouse */
-}
+        ul li:hover {
+            background-color: #e9ecef;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 
@@ -305,40 +306,37 @@ ul li:hover {
                 {% else %}
                     <p><i class="fas fa-exclamation-circle"></i> Este protocolo ainda não possui um atendimento associado.</p>
                 {% endif %}
-                <br><br>
-                <h3>Mensagens</h3>
-<ul>
-    {% for mensagem in mensagens %}
-        <li>
-            <strong>{{ mensagem.usuario }}</strong> em {{ mensagem.data_hora|date:"d/m/Y H:i" }}:<br>
-            {{ mensagem.mensagem }}
-        </li>
-    {% endfor %}
-</ul>
+                
+                <h3 class="mt-4">Mensagens</h3>
+                <ul>
+                    {% for mensagem in mensagens %}
+                        <li>
+                            <strong>{{ mensagem.usuario }}</strong> em {{ mensagem.data_hora|date:"d/m/Y H:i" }}:<br>
+                            {{ mensagem.mensagem }}
+                        </li>
+                    {% endfor %}
+                </ul>
 
-                <br>
-                <a id="btn-voltar" class="btn btn-return">
-                    <i class="fas fa-arrow-left"></i> Voltar
-                </a>
-                <!-- Botão Atualizar Atendimento -->
-    <a id="btn-adicionar-mensagem" class="btn">
-        Atualizar Atendimento
-    </a>
+                <div class="mt-4">
+                    <a id="btn-voltar" class="btn btn-return me-2">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                    <a id="btn-adicionar-mensagem" class="btn btn-update">
+                        Atualizar Atendimento
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Overlay para fundo escurecido -->
     <div id="overlay"></div>
 
-    <!-- Formulário suspenso -->
     <div id="form-mensagem">
         <form id="form-mensagem-atendimento">
             <label for="mensagem">Mensagem de Atualização:</label>
-            <input type="text" id="mensagem" name="mensagem" required>
+            <textarea id="mensagem" name="mensagem" required></textarea>
             <button type="submit">Enviar</button>
         </form>
-    </div>
-                
-            </div>
-        </div>
     </div>
 </body>
 <script>
@@ -347,37 +345,31 @@ ul li:hover {
     });
 </script>
 <script>
-    // Referências aos elementos HTML
     const btnAdicionarMensagem = document.getElementById("btn-adicionar-mensagem");
     const formMensagem = document.getElementById("form-mensagem");
     const overlay = document.getElementById("overlay");
 
-    // Função para exibir o formulário suspenso
     btnAdicionarMensagem.addEventListener("click", function () {
         formMensagem.style.display = "block";
         overlay.style.display = "block";
     });
 
-    // Função para esconder o formulário e o overlay
     overlay.addEventListener("click", function () {
         formMensagem.style.display = "none";
         overlay.style.display = "none";
     });
 
-    // Fechar o formulário quando o botão Enviar for clicado
-    const formAtendimento = document.getElementById("form-mensagem-atendimento"); // Renomeada para evitar conflito
+    const formAtendimento = document.getElementById("form-mensagem-atendimento");
     formAtendimento.addEventListener("submit", function (event) {
-        event.preventDefault(); // Previne o envio do formulário para o servidor
+        event.preventDefault();
 
-        // Obtém os valores do formulário
         const mensagem = document.getElementById("mensagem").value;
         
-        // Envia os dados via POST para o backend
         fetch("", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
-                "X-CSRFToken": "{{ csrf_token }}"  // Certifique-se de usar o token CSRF no template
+                "X-CSRFToken": "{{ csrf_token }}"
             },
             body: new URLSearchParams({
                 "mensagem": mensagem
@@ -386,17 +378,16 @@ ul li:hover {
         .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
-                alert(data.message);  // Mostra mensagem de sucesso
-                formMensagem.style.display = "none"; // Fecha o formulário
+                alert(data.message);
+                formMensagem.style.display = "none";
                 overlay.style.display = "none";
                 location.reload();
             } else {
-                alert(data.message);  // Mostra mensagem de erro
+                alert(data.message);
             }
         })
         .catch(error => console.error("Erro:", error));
     });
-    
 </script>
 
 </html>

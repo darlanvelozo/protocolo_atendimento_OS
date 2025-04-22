@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-4al4ub-z%ypd96!2e^x(ju$vnhchzz1p&c(rg7otafnd7jc6q=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['protocolos.megalinkpiaui.com.br']
+ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = '/admin/login/'   # Ou outra URL de login que você deseja usar
 
@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'protocolocd',
-    'dal',
-    'dal_select2',
+    
 ]
 
 MIDDLEWARE = [
@@ -80,11 +79,11 @@ WSGI_APPLICATION = 'criar_protocolo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gerenciamento_protocolo',        # Nome do banco de dados criado
-        'USER': 'admin',      # Nome do usuário criado
-        'PASSWORD': 'qualidade@trunks.57',        # Senha do usuário
-        'HOST': '187.62.153.52',            # O host onde o PostgreSQL está rodando
-        'PORT': '5432',                 # A porta padrão do PostgreSQL
+        'NAME': 'novo_protocolamento',
+        'USER': 'admin',
+        'PASSWORD': 'qualidade@trunks.57',
+        'HOST': '187.62.153.52',
+        'PORT': '5432',
     }
 }
 

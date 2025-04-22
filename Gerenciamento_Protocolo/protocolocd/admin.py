@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Protocolo,Trecho, Atendimento, DescricaoTrecho
+from .models import Protocolo,Trecho, Atendimento, DescricaoTrecho, Mensagem, Servico, Responsavel, OrdemServico
 import csv
 from django.http import HttpResponse
 
@@ -33,16 +33,25 @@ class TrechoAdmin(admin.ModelAdmin):
 
 class ProtocoloAdmin(admin.ModelAdmin):
     ordering = ['trecho']
-    list_display = ('numero_chamado_interno', 'estado', 'tipo_evento', 'responsavel_trecho', 'data_hora_falha')  # Customize as colunas que aparecem na listagem
-    search_fields = ('numero_chamado_interno', 'estado', 'responsavel_trecho')  # Adiciona um campo de busca
-    list_filter = ('estado', 'tipo_evento', 'ativo')  # Adiciona filtros de busca por estado e tipo de evento
+    list_display = ('numero_chamado_interno', 'estado', 'tipo_evento', 'responsavel_trecho', 'data_hora_falha', 'get_pop_trecho_display')
+    search_fields = ('numero_chamado_interno', 'estado', 'responsavel_trecho')
+    list_filter = ('estado', 'tipo_evento', 'ativo', 'pop_trecho')
     class Media:
         js = ('js/protocolo_admin.js',)
-     # Preencher campos automaticamente quando o Trecho for selecionado
+    
+    def get_pop_trecho_display(self, obj):
+        """Retorna uma versão formatada do POP/Trecho para exibição na lista."""
+        return obj.get_pop_trecho_info()
+    get_pop_trecho_display.short_description = 'POP/Trecho'
+    
+    # Preencher campos automaticamente quando o Trecho for selecionado
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # Verifica se o campo for 'trecho'
-        if db_field.name == "Trecho":
+        if db_field.name == "trecho":
             kwargs['queryset'] = Trecho.objects.all()  # Isso não é necessário, mas garante que o queryset esteja correto
+        # Verifica se o campo for 'pop_trecho'
+        elif db_field.name == "pop_trecho":
+            kwargs['queryset'] = Servico.objects.all().order_by('id_cliente_servico')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
@@ -63,7 +72,6 @@ class ProtocoloAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 admin.site.register(Protocolo, ProtocoloAdmin)
-from .models import Mensagem
 
 @admin.register(Mensagem)
 class MensagemAdmin(admin.ModelAdmin):
@@ -77,3 +85,32 @@ class DescricaoTrechoAdmin(admin.ModelAdmin):
     list_filter = ('data_criacao',)
     search_fields = ('trecho__trecho', 'descricao')
     ordering = ['-data_criacao']
+
+@admin.register(Servico)
+class ServicoAdmin(admin.ModelAdmin):
+    list_display = ('id_cliente_servico', 'get_descricao_resumida')
+    search_fields = ('id_cliente_servico', 'descricao')
+    ordering = ['id_cliente_servico']
+    list_per_page = 50  # Aumentar para mostrar mais itens por página
+    
+    def get_descricao_resumida(self, obj):
+        return obj.get_descricao_resumida()
+    get_descricao_resumida.short_description = 'Descrição'
+    
+    def has_add_permission(self, request):
+        # Desabilitar a adição manual, já que os serviços são importados
+        return False
+
+@admin.register(Responsavel)
+class ResponsavelAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'telefone', 'email', 'ativo')
+    search_fields = ('nome', 'telefone', 'email')
+    list_filter = ('ativo',)
+    ordering = ['nome']
+
+@admin.register(OrdemServico)
+class OrdemServicoAdmin(admin.ModelAdmin):
+    list_display = ('numero_ordem_servico', 'status', 'cliente', 'data_cadastro')
+    list_filter = ('status', 'data_cadastro')
+    search_fields = ('numero_ordem_servico', 'cliente')
+    ordering = ['-data_cadastro']
