@@ -2,6 +2,7 @@
 from django import forms
 from .models import Responsavel
 
+from .models import SuporteProtocolo
 class MensagemForm(forms.Form):
     mensagem = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Digite sua mensagem'}))
 
@@ -26,3 +27,8 @@ class ResponsavelForm(forms.ModelForm):
             raise forms.ValidationError('O telefone deve ter pelo menos 10 dígitos')
             
         return telefone
+
+class SuporteProtocoloForm(forms.ModelForm):
+    class Meta:
+        model = SuporteProtocolo
+        fields = ['id_cliente_servico', 'descricao', 'responsavel', 'id_tipo_atendimento', 'id_atendimento_status', 'ativo', 'protocolo', 'data_hora_falha']

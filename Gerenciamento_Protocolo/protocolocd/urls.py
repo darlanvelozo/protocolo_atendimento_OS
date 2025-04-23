@@ -30,4 +30,8 @@ urlpatterns = [
     path('listar-protocolos/', login_required(views.listar_protocolos), name='listar_protocolos'),
     path('trecho/<int:pk>/json/', login_required(views.trecho_json), name='trecho-json'),
     path('gestao-de-protocolos/', login_required(views.gestao_protocolos), name='gestao_protocolos'),
+    path('criar-protocolo-suporte/', login_required(views.criar_protocolo_suporte), name='criar_protocolo_suporte'),
+    path('suporte/', login_required(views.home_suporte), name='home_suporte'),
+    path('suporte/<int:protocolo_id>/', login_required(views.detalhes_protocolo_suporte), name='detalhes_protocolo_suporte'),
+    path('relacionar-protocolos/', login_required(views.relacionar_protocolos), name='relacionar_protocolos'),
 ]

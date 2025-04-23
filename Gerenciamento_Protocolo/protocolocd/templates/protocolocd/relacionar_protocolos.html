@@ -1,0 +1,772 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relacionar Protocolos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4ecdc4;
+            --secondary-color: #ff6b6b;
+            --accent-color: #ffd166;
+            --success-color: #06d6a0;
+            --text-color: #2d3436;
+            --bg-light: #f8f9fa;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #c1dfc4 0%, #deecdd 100%);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z3JhZGllbnQlMjBibHVlfGVufDB8fDB8fHww&w=1000&q=80');
+            background-size: cover;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .main-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out forwards;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, rgba(78, 205, 196, 0.2) 100%);
+            opacity: 0.1;
+            animation: float 8s infinite ease-in-out;
+        }
+        
+        .bubble-1 {
+            width: 100px;
+            height: 100px;
+            top: -50px;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .bubble-2 {
+            width: 150px;
+            height: 150px;
+            bottom: -75px;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        .bubble-3 {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        .instruction-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instruction-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .instruction-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .instruction-text {
+            color: var(--text-color);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .instruction-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #36b1a0 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex: 1;
+        }
+
+        .protocols-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .protocol-box, .suporte-box, .relation-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .protocol-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, #36b1a0 100%);
+        }
+
+        .suporte-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--secondary-color) 0%, #e85a5a 100%);
+        }
+
+        .relation-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-color) 0%, #f9c74f 100%);
+        }
+
+        .box-title {
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 18px;
+            position: relative;
+        }
+
+        .protocol-title {
+            color: var(--primary-color);
+        }
+
+        .suporte-title {
+            color: var(--secondary-color);
+        }
+
+        .relation-title {
+            color: var(--accent-color);
+        }
+
+        .items-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .items-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .items-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .items-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        .items-container::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+        .draggable-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: fadeIn 0.5s;
+        }
+
+        .draggable-item:active {
+            cursor: grabbing;
+        }
+
+        .protocol-item {
+            background: linear-gradient(to right, rgba(78, 205, 196, 0.1), rgba(78, 205, 196, 0.05));
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .protocol-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, rgba(78, 205, 196, 0.2), rgba(78, 205, 196, 0.1));
+        }
+
+        .suporte-item {
+            background: linear-gradient(to right, rgba(255, 107, 107, 0.1), rgba(255, 107, 107, 0.05));
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .suporte-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.1));
+        }
+
+        .relation-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(to right, rgba(255, 209, 102, 0.1), rgba(255, 209, 102, 0.05));
+            border-left: 4px solid var(--accent-color);
+            padding-right: 10px;
+        }
+
+        .relation-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, rgba(255, 209, 102, 0.2), rgba(255, 209, 102, 0.1));
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .item-info i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .relation-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .dropzone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            transition: all 0.3s;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .dropzone.dragover {
+            border-color: var(--success-color);
+            background-color: rgba(6, 214, 160, 0.1);
+        }
+
+        .dropzone-text {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .dropzone i {
+            font-size: 24px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-remove:hover {
+            transform: scale(1.2);
+        }
+
+        .dragging {
+            opacity: 0.6;
+            transform: scale(0.95);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .alert-float {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+            animation: slideInRight 0.5s, fadeOut 0.5s 2.5s forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, var(--success-color) 0%, #05c291 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(6, 214, 160, 0.3);
+            display: inline-block;
+        }
+
+        .btn-create:hover {
+            background: linear-gradient(135deg, #05c291 0%, var(--success-color) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(6, 214, 160, 0.4);
+            color: white;
+        }
+        
+        .btn-create:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(6, 214, 160, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div id="alert-container"></div>
+    
+    <div class="container main-container">
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0"><i class="bi bi-link-45deg me-2"></i>Relacionar Protocolos</h1>
+            <a href="{% url 'criar_protocolo_suporte' %}" class="btn-create">
+                <i class="bi bi-plus-circle me-1"></i>Criar Protocolo de Suporte
+            </a>
+        </div>
+        
+        <div class="instruction-card">
+            <h2 class="instruction-title"><i class="bi bi-info-circle me-2"></i>Como Relacionar Protocolos</h2>
+            <div class="instruction-text">
+                <div class="instruction-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Encontre o protocolo NOC-TX que deseja relacionar na lista à esquerda.</div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Encontre o protocolo de suporte que deseja relacionar na lista à direita.</div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Arraste o protocolo de suporte e solte-o na área designada abaixo do protocolo NOC-TX.</div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Para remover uma relação, clique no botão <i class="bi bi-x-circle text-danger"></i> ao lado da relação na lista de relações.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-5">
+                <div class="protocol-box h-100">
+                    <h3 class="box-title protocol-title"><i class="bi bi-diagram-3 me-2"></i>Protocolos NOC-TX</h3>
+                    <div class="items-container">
+                        {% for protocolo in protocolos %}
+                        <div class="protocol-container">
+                            <div class="draggable-item protocol-item" id="protocolo-{{ protocolo.id }}" data-id="{{ protocolo.id }}" data-type="protocolo">
+                                <span class="item-title">{{ protocolo.numero_chamado_interno }}</span>
+                                <div class="item-info">
+                                    <i class="bi bi-person-fill"></i>
+                                    <span>{{ protocolo.responsavel_atendimento.nome|default:"Não definido" }}</span>
+                                </div>
+                                <div class="item-info">
+                                    <i class="bi bi-tag-fill"></i>
+                                    <span>{{ protocolo.get_tipo_evento_display }}</span>
+                                </div>
+                                <div class="item-info">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span>{{ protocolo.estado }} - {{ protocolo.nome_pop_a }}</span>
+                                </div>
+                            </div>
+                            <div class="dropzone" id="dropzone-{{ protocolo.id }}" data-protocolo-id="{{ protocolo.id }}">
+                                <i class="bi bi-download"></i>
+                                <div class="dropzone-text">Arraste um protocolo de suporte para relacionar</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-search" style="font-size: 2rem; color: #ccc;"></i>
+                            <p class="mt-2 text-muted">Nenhum protocolo NOC-TX encontrado</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="relation-box h-100">
+                    <h3 class="box-title relation-title"><i class="bi bi-link-45deg me-2"></i>Relações Existentes</h3>
+                    <div class="items-container">
+                        {% for protocolo in protocolos %}
+                            {% with suporte_ids=relacoes|get_item:protocolo.id %}
+                                {% if suporte_ids %}
+                                    {% for suporte_id in suporte_ids %}
+                                        {% for suporte in protocolos_suporte %}
+                                            {% if suporte.id == suporte_id %}
+                                            <div class="draggable-item relation-item" id="relation-{{ protocolo.id }}-{{ suporte.id }}">
+                                                <div>
+                                                    <span class="item-title">{{ protocolo.numero_chamado_interno }}</span>
+                                                    <div class="item-info">
+                                                        <i class="bi bi-arrow-down"></i>
+                                                        <span>ID: {{ suporte.id_cliente_servico }}</span>
+                                                    </div>
+                                                </div>
+                                                <button class="btn-remove" onclick="removerRelacao({{ protocolo.id }}, {{ suporte.id }})">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                        
+                        {% if relacoes|length == 0 %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-diagram-3" style="font-size: 2rem; color: #ccc;"></i>
+                            <p class="mt-2 text-muted">Nenhuma relação existente</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="suporte-box h-100">
+                    <h3 class="box-title suporte-title"><i class="bi bi-headset me-2"></i>Protocolos de Suporte</h3>
+                    <div class="items-container">
+                        {% comment %}Criar uma lista de todos os protocolos de suporte já relacionados{% endcomment %}
+                        {% with protocolos_relacionados=relacoes.values|sum_lists %}
+                            {% for suporte in protocolos_suporte %}
+                                {% if suporte.id not in protocolos_relacionados %}
+                                <div class="draggable-item suporte-item" id="suporte-{{ suporte.id }}" data-id="{{ suporte.id }}" data-type="suporte" draggable="true">
+                                    <span class="item-title">ID: {{ suporte.id_cliente_servico }}</span>
+                                    <div class="item-info">
+                                        <i class="bi bi-person-fill"></i>
+                                        <span>{{ suporte.responsavel.nome|default:"Não definido" }}</span>
+                                    </div>
+                                    <div class="item-info">
+                                        <i class="bi bi-bookmark-fill"></i>
+                                        <span>{{ suporte.get_id_atendimento_status_display }}</span>
+                                    </div>
+                                    <div class="item-info">
+                                        <i class="bi bi-calendar-event-fill"></i>
+                                        <span>{{ suporte.data_hora_falha|date:"d/m/Y H:i"|default:"Data não definida" }}</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% empty %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-search" style="font-size: 2rem; color: #ccc;"></i>
+                                <p class="mt-2 text-muted">Nenhum protocolo de suporte encontrado</p>
+                            </div>
+                            {% endfor %}
+                            
+                            {% if protocolos_suporte and protocolos_suporte|length == protocolos_relacionados|length %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-check-circle" style="font-size: 2rem; color: #4ecdc4;"></i>
+                                <p class="mt-2 text-muted">Todos os protocolos de suporte já estão relacionados.</p>
+                                <a href="{% url 'criar_protocolo_suporte' %}" class="btn btn-sm btn-success mt-2">
+                                    <i class="bi bi-plus-circle me-1"></i>Criar novo protocolo
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-primary">
+                <i class="bi bi-house-fill me-1"></i>Voltar para Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Script do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script para a funcionalidade de arrastar e soltar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Função para mostrar uma notificação
+            function showNotification(message, type) {
+                const alertContainer = document.getElementById('alert-container');
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-float`;
+                alertDiv.innerHTML = message;
+                alertContainer.appendChild(alertDiv);
+                
+                // Remover notificação após 3 segundos
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 3000);
+            }
+            
+            // Configuração do evento de arrastar para itens de suporte
+            const suporteItems = document.querySelectorAll('.suporte-item');
+            suporteItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        id: this.dataset.id,
+                        type: this.dataset.type
+                    }));
+                    this.classList.add('dragging');
+                });
+                
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+            });
+            
+            // Configuração do evento de drop nas áreas de dropzone
+            const dropzones = document.querySelectorAll('.dropzone');
+            dropzones.forEach(dropzone => {
+                dropzone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                
+                dropzone.addEventListener('dragleave', function() {
+                    this.classList.remove('dragover');
+                });
+                
+                dropzone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    if (data.type === 'suporte') {
+                        const suporteId = data.id;
+                        const protocoloId = this.dataset.protocoloId;
+                        
+                        // Enviar a relação para o servidor via AJAX
+                        relacionarProtocolos(protocoloId, suporteId);
+                    }
+                });
+            });
+            
+            // Função para relacionar protocolos via AJAX
+            window.relacionarProtocolos = function(protocoloId, suporteId) {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                fetch('{% url "relacionar_protocolos" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: `protocolo_id=${protocoloId}&suporte_id=${suporteId}&acao=adicionar`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showNotification('Protocolos relacionados com sucesso!', 'success');
+                        // Recarregar a página para mostrar a relação
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showNotification('Erro ao relacionar protocolos: ' + data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Erro de comunicação com o servidor', 'danger');
+                    console.error('Erro:', error);
+                });
+            };
+            
+            // Função para remover relação
+            window.removerRelacao = function(protocoloId, suporteId) {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                fetch('{% url "relacionar_protocolos" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: `protocolo_id=${protocoloId}&suporte_id=${suporteId}&acao=remover`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showNotification('Relação removida com sucesso!', 'success');
+                        // Remover o elemento da interface
+                        document.getElementById(`relation-${protocoloId}-${suporteId}`).remove();
+                        
+                        // Se não houver mais relações, mostrar a mensagem de "nenhuma relação"
+                        const relationsContainer = document.querySelector('.relation-box .items-container');
+                        if (relationsContainer.children.length === 0) {
+                            relationsContainer.innerHTML = `
+                                <div class="text-center py-4">
+                                    <i class="bi bi-diagram-3" style="font-size: 2rem; color: #ccc;"></i>
+                                    <p class="mt-2 text-muted">Nenhuma relação existente</p>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        showNotification('Erro ao remover relação: ' + data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Erro de comunicação com o servidor', 'danger');
+                    console.error('Erro:', error);
+                });
+            };
+        });
+    </script>
+    
+    <!-- CSRF Token necessário para requisições POST AJAX -->
+    {% csrf_token %}
+</body>
+</html>

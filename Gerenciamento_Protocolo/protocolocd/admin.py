@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Protocolo,Trecho, Atendimento, DescricaoTrecho, Mensagem, Servico, Responsavel, OrdemServico
+from .models import Protocolo,Trecho, Atendimento, DescricaoTrecho, Mensagem, Servico, Responsavel, OrdemServico, SuporteProtocolo
 import csv
 from django.http import HttpResponse
 
@@ -114,3 +114,10 @@ class OrdemServicoAdmin(admin.ModelAdmin):
     list_filter = ('status', 'data_cadastro')
     search_fields = ('numero_ordem_servico', 'cliente')
     ordering = ['-data_cadastro']
+
+@admin.register(SuporteProtocolo)
+class SuporteProtocoloAdmin(admin.ModelAdmin):
+    list_display = ('descricao', 'responsavel', 'id_atendimento_status', 'ativo', 'data_hora_falha')
+    list_filter = ('id_atendimento_status', 'ativo')
+    search_fields = ('descricao', 'responsavel__nome')
+    ordering = ['-id_atendimento_status']

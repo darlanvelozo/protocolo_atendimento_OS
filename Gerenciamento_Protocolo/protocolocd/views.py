@@ -11,7 +11,20 @@ from django.utils import timezone
 from datetime import timedelta
 import requests
 from django.contrib.auth.decorators import login_required
-from .models import Atendimento, Mensagem
+from .models import Atendimento, Mensagem, Responsavel
+from django.shortcuts import render, redirect
+from .models import SuporteProtocolo
+from .forms import SuporteProtocoloForm
+
+def criar_protocolo_suporte(request):
+    if request.method == 'POST':
+        form = SuporteProtocoloForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home_suporte')
+    else:
+        form = SuporteProtocoloForm()
+    return render(request, 'protocolocd/criar_protocolo_suporte.html', {'form': form})
 
 token_primordial = []
 def adicionar_mensagem(id_mensagem, mensagem):
@@ -33,6 +46,7 @@ def adicionar_mensagem(id_mensagem, mensagem):
         return response.json()
     else:
         raise Exception(f"Erro ao adicionar mensagem: {response.text}")
+
 # Função para obter um novo token
 def new_token():
     url = "https://api.megalinktelecom.hubsoft.com.br/oauth/token"
@@ -51,7 +65,6 @@ def new_token():
         return token_primordial[0]
     else:
         raise Exception(f"Erro ao obter token: {response.text}")
-
 
 def gestao_protocolos(request):
     current_order = request.GET.get('order', 'asc')
@@ -118,7 +131,6 @@ def gestao_protocolos(request):
     }
     return render(request, 'protocolocd/gestao_protocolos.html', context)
 
-
 def home(request):
     """
     Exibe a página inicial com os protocolos filtrados.
@@ -136,10 +148,6 @@ def home(request):
     # Renderiza o template home.html
     return render(request, 'protocolocd/home.html', context)
 
-
-
-
-
 def listar_protocolos(request):
     """
     Lista todos os protocolos com opções de filtragem.
@@ -155,7 +163,6 @@ def listar_protocolos(request):
     }
 
     return render(request, 'listar_protocolos.html', context)
-
 
 def filtrar_protocolos(queryset, params):
     """
@@ -193,9 +200,6 @@ def filtrar_protocolos(queryset, params):
     elif inativo:
         queryset = queryset.filter(ativo=False)
     return queryset
-
- 
-
 
 def detalhes_protocolo(request, protocolo_id):
     """
@@ -239,6 +243,7 @@ def detalhes_protocolo(request, protocolo_id):
         'atendimento': atendimento,
         'mensagens': mensagens,
     })
+
 def trecho_json(request, pk):
     """
     Retorna os detalhes de um trecho em formato JSON.
@@ -264,3 +269,111 @@ def trecho_json(request, pk):
         return JsonResponse(data)
     except Trecho.DoesNotExist:
         return JsonResponse({"error": "Trecho não encontrado"}, status=404)
+
+def home_suporte(request):
+    """
+    Exibe a página inicial com os protocolos de suporte filtrados.
+    """
+    # Obtém todos os protocolos de suporte
+    protocolos_suporte = SuporteProtocolo.objects.all()
+    
+    # Obtém as opções para os filtros
+    responsaveis = Responsavel.objects.filter(ativo=True)
+    tipos_atendimento = SuporteProtocolo.TIPOS_ATENDIMENTO_SUPORTE
+    status_atendimento_choices = SuporteProtocolo.status_atendimento_choices_suporte
+    
+    # Filtra protocolos com base nos parâmetros enviados
+    if request.GET.get('descricao'):
+        protocolos_suporte = protocolos_suporte.filter(descricao__icontains=request.GET.get('descricao'))
+    
+    if request.GET.get('responsavel'):
+        protocolos_suporte = protocolos_suporte.filter(responsavel_id=request.GET.get('responsavel'))
+    
+    if request.GET.get('tipo_atendimento'):
+        protocolos_suporte = protocolos_suporte.filter(id_tipo_atendimento=request.GET.get('tipo_atendimento'))
+    
+    if request.GET.get('status_atendimento'):
+        protocolos_suporte = protocolos_suporte.filter(id_atendimento_status=request.GET.get('status_atendimento'))
+    
+    # Filtrar por status ativo/inativo
+    ativo = request.GET.get('ativo')
+    inativo = request.GET.get('inativo')
+    
+    if ativo == 'true' and inativo != 'false':
+        protocolos_suporte = protocolos_suporte.filter(ativo=True)
+    elif inativo == 'false' and ativo != 'true':
+        protocolos_suporte = protocolos_suporte.filter(ativo=False)
+    # Se ambos estiverem marcados ou nenhum estiver marcado, não aplicamos filtro de status
+    
+    context = {
+        'protocolos_suporte': protocolos_suporte,
+        'responsaveis': responsaveis,
+        'tipos_atendimento': tipos_atendimento,
+        'status_atendimento_choices': status_atendimento_choices,
+    }
+    
+    return render(request, 'protocolocd/home_suporte.html', context)
+
+def detalhes_protocolo_suporte(request, protocolo_id):
+    """
+    Exibe detalhes de um protocolo de suporte específico.
+    """
+    # Busca o protocolo de suporte pelo ID
+    protocolo = get_object_or_404(SuporteProtocolo, id=protocolo_id)
+    
+    # Renderiza a página com os dados do protocolo de suporte
+    return render(request, 'protocolocd/detalhes_protocolo_suporte.html', {
+        'protocolo': protocolo,
+    })
+
+def relacionar_protocolos(request):
+    """
+    Exibe e permite relacionar protocolos com protocolos de suporte.
+    """
+    # Obter protocolos ativos
+    protocolos = Protocolo.objects.filter(ativo=True)
+    
+    # Obter protocolos de suporte ativos
+    protocolos_suporte = SuporteProtocolo.objects.filter(ativo=True)
+    
+    # Se for um POST, atualizar a relação
+    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            protocolo_id = request.POST.get('protocolo_id')
+            suporte_id = request.POST.get('suporte_id')
+            acao = request.POST.get('acao')  # 'adicionar' ou 'remover'
+            
+            protocolo = get_object_or_404(Protocolo, id=protocolo_id)
+            suporte = get_object_or_404(SuporteProtocolo, id=suporte_id)
+            
+            if acao == 'adicionar':
+                # Primeiro, removemos qualquer relacionamento existente
+                suporte.protocolo = protocolo
+                suporte.save()
+                
+                # Depois, adicionamos à relação many-to-many
+                protocolo.protocolos_suporte.add(suporte)
+                return JsonResponse({'status': 'success', 'message': 'Protocolos relacionados com sucesso!'})
+            elif acao == 'remover':
+                # Removemos o relacionamento
+                suporte.protocolo = None
+                suporte.save()
+                
+                # Removemos da relação many-to-many
+                protocolo.protocolos_suporte.remove(suporte)
+                return JsonResponse({'status': 'success', 'message': 'Relação removida com sucesso!'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    
+    # Criar um dicionário para mapear quais protocolos de suporte estão associados a quais protocolos
+    relacoes = {}
+    for protocolo in protocolos:
+        relacoes[str(protocolo.id)] = list(protocolo.protocolos_suporte.values_list('id', flat=True))
+    
+    context = {
+        'protocolos': protocolos,
+        'protocolos_suporte': protocolos_suporte,
+        'relacoes': relacoes,
+    }
+    
+    return render(request, 'protocolocd/relacionar_protocolos.html', context)

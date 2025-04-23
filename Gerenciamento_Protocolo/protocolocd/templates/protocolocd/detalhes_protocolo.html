@@ -17,6 +17,7 @@
             --card-background: #fff;
             --card-border-radius: 16px;
             --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --success-color: #28a745;
         }
 
         body {
@@ -267,6 +268,84 @@
             background-color: #e9ecef;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
+
+        .suporte-section {
+            background-color: #f1f3f5;
+            border-left: 6px solid var(--success-color);
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .suporte-section h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+        }
+
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-bottom: none;
+            color: var(--success-color);
+            font-weight: 600;
+            padding: 12px 15px;
+        }
+
+        .table tbody tr {
+            cursor: pointer;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(40, 167, 69, 0.05) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            font-weight: 500;
+        }
+
+        .alert-info {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-color: rgba(0, 123, 255, 0.2);
+            color: #0056b3;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .alert-link {
+            color: #004085;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .alert-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
@@ -306,6 +385,62 @@
                 {% else %}
                     <p><i class="fas fa-exclamation-circle"></i> Este protocolo ainda não possui um atendimento associado.</p>
                 {% endif %}
+                
+                <!-- Seção de protocolos de suporte relacionados -->
+                <div class="suporte-section">
+                    <h3><i class="fas fa-link"></i> Protocolos de Suporte Relacionados</h3>
+                    
+                    {% if protocolo.protocolos_suporte.all %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID Cliente</th>
+                                        <th>Responsável</th>
+                                        <th>Descrição</th>
+                                        <th>Status</th>
+                                        <th>Data/Hora da Falha</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for suporte in protocolo.protocolos_suporte.all %}
+                                    <tr style="background-color: #f8f9fa; transition: all 0.2s ease-in-out;">
+                                        <td>{{ suporte.id_cliente_servico }}</td>
+                                        <td>{{ suporte.responsavel.nome|default:"Não definido" }}</td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 200px;" title="{{ suporte.descricao }}">
+                                                {{ suporte.descricao|truncatechars:50 }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if suporte.ativo %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">
+                                                {{ suporte.get_id_atendimento_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ suporte.data_hora_falha|date:"d/m/Y H:i"|default:"Não definida" }}</td>
+                                        <td>
+                                            <a href="{% url 'detalhes_protocolo_suporte' suporte.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i> Detalhes
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3 text-end">
+                            <a href="{% url 'relacionar_protocolos' %}" class="btn btn-sm btn-success">
+                                <i class="fas fa-link"></i> Gerenciar Relações
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Nenhum protocolo de suporte relacionado.
+                            <a href="{% url 'relacionar_protocolos' %}" class="alert-link">Clique aqui</a> para relacionar protocolos.
+                        </div>
+                    {% endif %}
+                </div>
                 
                 <h3 class="mt-4">Mensagens</h3>
                 <ul>

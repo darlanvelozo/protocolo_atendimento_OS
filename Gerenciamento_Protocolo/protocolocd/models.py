@@ -200,6 +200,7 @@ class Protocolo(models.Model):
     
     status_atendimento = models.IntegerField(default=2, choices=status_atendimento_choices)
     
+    protocolos_suporte = models.ManyToManyField('SuporteProtocolo', blank=True, related_name='protocolos')
     
     class Meta:
         ordering = ['trecho']
@@ -412,3 +413,30 @@ class OrdemServico(models.Model):
     
     def __str__(self):
         return f"OS {self.numero_ordem_servico} - {self.status}"
+    
+class SuporteProtocolo(models.Model):
+    status_atendimento_choices_suporte= [
+        (1, 'PENDENTE (Abertura de OS)'),
+        (2, 'AGUARDANDO ANALISE'),
+        (22, 'EM ANDAMENTO'),
+        
+    ]
+
+    TIPOS_ATENDIMENTO_SUPORTE = [
+        (688, 'ATACADO > LENTIDÃO/PROBLEMA GENERALIZADO'),
+        (686, 'ATACADO > SWAP'),
+        (632, 'ATACADO > SEM SERVIÇO'),
+        (626, 'ATACADO > SOLICITAÇÃO DE CLIENTE'),
+        (625, 'ATACADO > MANUTENÇÃO PREVENTIVA/CORRETIVA'),
+    ]
+    id_cliente_servico = models.IntegerField()
+    descricao = models.TextField()
+    responsavel = models.ForeignKey(Responsavel, on_delete=models.SET_NULL, null=True, blank=True)
+    id_tipo_atendimento = models.IntegerField(choices=TIPOS_ATENDIMENTO_SUPORTE)
+    id_atendimento_status = models.IntegerField(choices=status_atendimento_choices_suporte)
+    ativo = models.BooleanField(default=True)
+    protocolo = models.ForeignKey(Protocolo, on_delete=models.SET_NULL, null=True, blank=True)
+    data_hora_falha = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.descricao
