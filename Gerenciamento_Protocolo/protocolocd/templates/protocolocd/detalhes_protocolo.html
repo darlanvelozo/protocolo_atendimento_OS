@@ -469,6 +469,12 @@
     <div id="form-mensagem">
         <form id="form-mensagem-atendimento">
             <label for="mensagem">Mensagem de Atualização:</label>
+            {% if protocolo.protocolos_suporte.all %}
+            <div class="alert alert-info mb-3" style="font-size: 0.9rem; padding: 10px;">
+                <i class="fas fa-info-circle"></i> Esta mensagem será adicionada também aos 
+                <strong>{{ protocolo.protocolos_suporte.count }} protocolo(s) de suporte</strong> relacionados.
+            </div>
+            {% endif %}
             <textarea id="mensagem" name="mensagem" required></textarea>
             <button type="submit">Enviar</button>
         </form>
@@ -513,10 +519,27 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
-                alert(data.message);
+                // Criar um alerta personalizado mais informativo
+                const alertDiv = document.createElement("div");
+                alertDiv.id = "alert-modal";
+                alertDiv.style.display = "block";
+                
+                const protocolosCount = {{ protocolo.protocolos_suporte.count }};
+                let mensagemAlerta = `<h4>Mensagem enviada com sucesso!</h4>`;
+                
+                if (protocolosCount > 0) {
+                    mensagemAlerta += `<p>A mensagem foi adicionada ao protocolo atual e a ${protocolosCount} protocolo(s) de suporte relacionado(s).</p>`;
+                } else {
+                    mensagemAlerta += `<p>A mensagem foi adicionada ao protocolo atual.</p>`;
+                }
+                
+                mensagemAlerta += `<button class="btn" onclick="document.getElementById('alert-modal').style.display='none'; document.getElementById('overlay').style.display='none'; location.reload();">OK</button>`;
+                
+                alertDiv.innerHTML = mensagemAlerta;
+                document.body.appendChild(alertDiv);
+                
+                overlay.style.display = "block";
                 formMensagem.style.display = "none";
-                overlay.style.display = "none";
-                location.reload();
             } else {
                 alert(data.message);
             }

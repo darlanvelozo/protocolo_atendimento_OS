@@ -2,6 +2,7 @@ from django.db import models
 import requests
 from django.db import transaction
 from django.contrib.auth.models import User
+from datetime import datetime
 
 
 
@@ -437,6 +438,88 @@ class SuporteProtocolo(models.Model):
     ativo = models.BooleanField(default=True)
     protocolo = models.ForeignKey(Protocolo, on_delete=models.SET_NULL, null=True, blank=True)
     data_hora_falha = models.DateTimeField(null=True, blank=True)
+    atendimento_suporte_id = models.ForeignKey('Atendimento', null=True, blank=True, on_delete=models.SET_NULL)
+    protocolo_atendimento = models.CharField(max_length=50, blank=True, null=True)
+
+    
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None  # Verifica se é um novo registro
+        
+        # Salva o protocolo de suporte no banco
+        super().save(*args, **kwargs)
+        
+        # Caso seja um novo protocolo de suporte, cria o atendimento fora da transação
+        if is_new and self.ativo:
+            try:
+                # Use um bloco separado para garantir a consistência
+                with transaction.atomic():
+                    # Define o nome e telefone do responsável
+                    nome_responsavel = "Megalink"  # Valor padrão
+                    telefone_responsavel = 86999998888  # Valor padrão
+                    
+                    # Se um responsável foi selecionado, use seus dados
+                    if self.responsavel:
+                        nome_responsavel = self.responsavel.nome
+                        telefone_responsavel = self.responsavel.telefone
+                    
+                    # Prepara data/hora da falha, caso não tenha sido informada
+                    data_hora = self.data_hora_falha or datetime.now()
+                    
+                    # Montando a descrição do atendimento
+                    descricao_formatada = f"""
+                    Protocolo de Suporte
+                    
+                    ID Cliente/Serviço: {self.id_cliente_servico}
+                    Data/Hora: {data_hora}
+                    Responsável: {nome_responsavel}
+                    
+                    Descrição:
+                    {self.descricao}
+                    """
+                    
+                    # Caso esteja relacionado a um protocolo, adiciona essa informação
+                    if self.protocolo:
+                        descricao_formatada += f"""
+                        
+                        Protocolo relacionado: {self.protocolo.numero_chamado_interno}
+                        """
+                    
+                    atendimento_data = new_atendimento(
+                        id_cliente_servico=self.id_cliente_servico,
+                        descricao=descricao_formatada,
+                        nome=nome_responsavel,
+                        telefone=telefone_responsavel,
+                        id_tipo_atendimento=self.id_tipo_atendimento,
+                        id_atendimento_status=self.id_atendimento_status,
+                        id_usuario_responsavel=self.responsavel.id_hubsoft if self.responsavel else None
+                    )
+                    
+                    print(atendimento_data)
+                    if atendimento_data.get('status') == 'success':
+                        atendimento_info = atendimento_data['atendimento']
+                        atendimento = Atendimento.objects.create(
+                            id_atendimento=atendimento_info['id_atendimento'],
+                            protocolo_atendimento=atendimento_info['protocolo'],
+                            descricao_abertura=atendimento_info['descricao_abertura'],
+                            A_tipo_atendimento=atendimento_info['tipo_atendimento'],
+                            usuario_abertura=atendimento_info['usuario_abertura'],
+                            usuario_responsavel=atendimento_info['usuario_responsavel'],
+                            status=atendimento_info['status'],
+                            cliente_nome=atendimento_info['cliente']['nome_razaosocial'],
+                            cliente_codigo=atendimento_info['cliente']['codigo_cliente'],
+                            servico_id=atendimento_info['servico']['id_cliente_servico'],
+                            servico_nome=atendimento_info['servico']['nome'],
+                            data_cadastro=data_hora
+                        )
+                        
+                        # Atualiza o campo protocolo_atendimento e a referência para o atendimento
+                        self.protocolo_atendimento = atendimento.protocolo_atendimento
+                        self.atendimento_suporte_id = atendimento
+                        super().save(*args, **kwargs)
+                    
+            except Exception as e:
+                # Log ou tratativa para falhas no atendimento
+                print(f"Erro ao criar atendimento de suporte: {e}")
 
     def __str__(self):
         return self.descricao

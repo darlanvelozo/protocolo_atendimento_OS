@@ -510,6 +510,12 @@
                         <div class="protocol-container">
                             <div class="draggable-item protocol-item" id="protocolo-{{ protocolo.id }}" data-id="{{ protocolo.id }}" data-type="protocolo">
                                 <span class="item-title">{{ protocolo.numero_chamado_interno }}</span>
+                                {% if protocolo.atendimento %}
+                                <div class="item-info">
+                                    <i class="bi bi-building"></i>
+                                    <span>{{ protocolo.atendimento.cliente_nome }}</span>
+                                </div>
+                                {% endif %}
                                 <div class="item-info">
                                     <i class="bi bi-person-fill"></i>
                                     <span>{{ protocolo.responsavel_atendimento.nome|default:"Não definido" }}</span>
@@ -551,9 +557,19 @@
                                             <div class="draggable-item relation-item" id="relation-{{ protocolo.id }}-{{ suporte.id }}">
                                                 <div>
                                                     <span class="item-title">{{ protocolo.numero_chamado_interno }}</span>
+                                                    {% if protocolo.atendimento %}
+                                                    <div class="item-info">
+                                                        <i class="bi bi-building"></i>
+                                                        <span>{{ protocolo.atendimento.cliente_nome }}</span>
+                                                    </div>
+                                                    {% endif %}
                                                     <div class="item-info">
                                                         <i class="bi bi-arrow-down"></i>
+                                                        {% if suporte.atendimento_suporte_id %}
+                                                        <span>{{ suporte.atendimento_suporte_id.cliente_nome }}</span>
+                                                        {% else %}
                                                         <span>ID: {{ suporte.id_cliente_servico }}</span>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <button class="btn-remove" onclick="removerRelacao({{ protocolo.id }}, {{ suporte.id }})">
@@ -586,7 +602,17 @@
                             {% for suporte in protocolos_suporte %}
                                 {% if suporte.id not in protocolos_relacionados %}
                                 <div class="draggable-item suporte-item" id="suporte-{{ suporte.id }}" data-id="{{ suporte.id }}" data-type="suporte" draggable="true">
-                                    <span class="item-title">ID: {{ suporte.id_cliente_servico }}</span>
+                                    <span class="item-title">{% if suporte.atendimento_suporte_id %}{{ suporte.atendimento_suporte_id.cliente_nome }}{% else %}ID: {{ suporte.id_cliente_servico }}{% endif %}</span>
+                                    {% if suporte.atendimento_suporte_id and suporte.atendimento_suporte_id.protocolo_atendimento %}
+                                    <div class="item-info">
+                                        <i class="bi bi-bookmark-fill"></i>
+                                        <span>{{ suporte.atendimento_suporte_id.protocolo_atendimento }}</span>
+                                    </div>
+                                    {% endif %}
+                                    <div class="item-info">
+                                        <i class="bi bi-hash"></i>
+                                        <span>ID: {{ suporte.id_cliente_servico }}</span>
+                                    </div>
                                     <div class="item-info">
                                         <i class="bi bi-person-fill"></i>
                                         <span>{{ suporte.responsavel.nome|default:"Não definido" }}</span>

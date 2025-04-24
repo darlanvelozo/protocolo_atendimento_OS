@@ -73,6 +73,18 @@ class ProtocoloAdmin(admin.ModelAdmin):
 
 admin.site.register(Protocolo, ProtocoloAdmin)
 
+@admin.register(Atendimento)
+class AtendimentoAdmin(admin.ModelAdmin):
+    list_display = ('protocolo_atendimento', 'cliente_nome', 'usuario_responsavel', 'status', 'data_cadastro', 'data_fechamento')
+    list_filter = ('status', 'data_cadastro', 'data_fechamento')
+    search_fields = ('protocolo_atendimento', 'cliente_nome', 'usuario_responsavel', 'descricao_abertura')
+    readonly_fields = ('id_atendimento', 'protocolo_atendimento', 'usuario_abertura', 'data_cadastro')
+    ordering = ['-data_cadastro']
+    
+    def has_add_permission(self, request):
+        # Desabilitar a adição manual, já que os atendimentos são criados automaticamente
+        return False
+
 @admin.register(Mensagem)
 class MensagemAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'atendimento', 'data_hora', 'mensagem')

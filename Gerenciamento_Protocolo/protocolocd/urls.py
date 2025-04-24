@@ -33,5 +33,6 @@ urlpatterns = [
     path('criar-protocolo-suporte/', login_required(views.criar_protocolo_suporte), name='criar_protocolo_suporte'),
     path('suporte/', login_required(views.home_suporte), name='home_suporte'),
     path('suporte/<int:protocolo_id>/', login_required(views.detalhes_protocolo_suporte), name='detalhes_protocolo_suporte'),
+    path('suporte/<int:protocolo_id>/enviar-mensagem/', login_required(views.enviar_mensagem_suporte), name='enviar_mensagem_suporte'),
     path('relacionar-protocolos/', login_required(views.relacionar_protocolos), name='relacionar_protocolos'),
 ]

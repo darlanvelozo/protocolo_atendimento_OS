@@ -184,6 +184,21 @@
             position: relative;
             z-index: 1;
         }
+        
+        .protocol-number {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            background-color: rgba(0, 0, 0, 0.15);
+            border-radius: 6px;
+            padding: 4px 8px;
+            display: inline-flex;
+        }
 
         .protocol-badge {
             display: inline-block;
@@ -583,7 +598,13 @@
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="protocol-card">
                     <div class="card-header">
-                        <h5 class="card-title">{{ protocolo.id_cliente_servico }}</h5>
+                        <h5 class="card-title">{% if protocolo.atendimento_suporte_id %}{{ protocolo.atendimento_suporte_id.cliente_nome }}{% else %}{{ protocolo.id_cliente_servico }}{% endif %}</h5>
+                        {% if protocolo.atendimento_suporte_id %}
+                        <div class="protocol-number">
+                            <i class="bi bi-bookmark-fill me-1"></i>
+                            {{ protocolo.atendimento_suporte_id.protocolo_atendimento }}
+                        </div>
+                        {% endif %}
                         <span class="protocol-badge {% if protocolo.ativo %}badge-active{% else %}badge-inactive{% endif %}">
                             {% if protocolo.ativo %}
                                 <i class="bi bi-circle-fill me-1"></i>Ativo
@@ -599,6 +620,13 @@
                                 <div>
                                     <span class="info-label">Responsável:</span>
                                     <span class="info-value">{{ protocolo.responsavel.nome }}</span>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-hash me-2"></i>
+                                <div>
+                                    <span class="info-label">ID Cliente/Serviço:</span>
+                                    <span class="info-value">{{ protocolo.id_cliente_servico }}</span>
                                 </div>
                             </div>
                             <div class="info-item">

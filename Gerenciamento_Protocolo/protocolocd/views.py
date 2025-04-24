@@ -229,8 +229,27 @@ def detalhes_protocolo(request, protocolo_id):
             # >>> Adicione aqui o código para executar a função adicionar_mensagem <<<
             # Exemplo:
             response = adicionar_mensagem(id_atendimento, mensagem_completa)
+            
+            # Processa os protocolos de suporte relacionados
+            protocolos_suporte = protocolo.protocolos_suporte.all()
+            mensagem_protocolos = f"{nome_usuario} [NOC-TX {protocolo.numero_chamado_interno}]: {mensagem}"
+            
+            for suporte in protocolos_suporte:
+                if suporte.atendimento_suporte_id:
+                    # Salva a mensagem no banco de dados para o protocolo de suporte
+                    Mensagem.objects.create(
+                        atendimento=suporte.atendimento_suporte_id,
+                        usuario=nome_usuario,
+                        mensagem=f"[Atualização do protocolo NOC-TX {protocolo.numero_chamado_interno}] {mensagem}"
+                    )
+                    
+                    # Adiciona a mensagem via API para o atendimento do suporte
+                    try:
+                        adicionar_mensagem(suporte.atendimento_suporte_id.id_atendimento, mensagem_protocolos)
+                    except Exception as e:
+                        print(f"Erro ao adicionar mensagem ao atendimento de suporte {suporte.id}: {e}")
 
-            return JsonResponse({'status': 'success', 'message': 'Mensagem enviada com sucesso!'})
+            return JsonResponse({'status': 'success', 'message': 'Mensagem enviada com sucesso para todos os protocolos relacionados!'})
 
         return JsonResponse({'status': 'error', 'message': 'Protocolo sem atendimento associado.'})
 
@@ -377,3 +396,73 @@ def relacionar_protocolos(request):
     }
     
     return render(request, 'protocolocd/relacionar_protocolos.html', context)
+
+def enviar_mensagem_suporte(request, protocolo_id):
+    """
+    Processa o envio de uma mensagem para um protocolo de suporte específico.
+    """
+    # Busca o protocolo de suporte pelo ID
+    protocolo = get_object_or_404(SuporteProtocolo, id=protocolo_id)
+    
+    # Verifica se o protocolo tem um atendimento associado
+    if not protocolo.atendimento_suporte_id:
+        return JsonResponse({'status': 'error', 'message': 'Este protocolo não possui um atendimento associado.'})
+    
+    if request.method == "POST":
+        # Captura os dados do formulário enviados via AJAX
+        mensagem = request.POST.get('mensagem')
+        
+        if not mensagem:
+            return JsonResponse({'status': 'error', 'message': 'A mensagem não pode estar vazia.'})
+        
+        atendimento = protocolo.atendimento_suporte_id
+        nome_usuario = request.user.username
+        
+        try:
+            # Salva a mensagem no banco de dados
+            Mensagem.objects.create(
+                atendimento=atendimento,
+                usuario=nome_usuario,
+                mensagem=mensagem
+            )
+            
+            # Concatena o nome do usuário com a mensagem para enviar via API
+            mensagem_completa = f"{nome_usuario}: {mensagem}"
+            
+            # Envia a mensagem via API
+            response = adicionar_mensagem(atendimento.id_atendimento, mensagem_completa)
+            
+            # Verifica se a mensagem foi enviada com sucesso
+            if protocolo.protocolo and protocolo.protocolo.atendimento:
+                # Se este protocolo de suporte estiver relacionado a um protocolo NOC-TX,
+                # também envia a mensagem para o atendimento do protocolo NOC-TX
+                try:
+                    # Adiciona uma mensagem no banco de dados para o protocolo NOC-TX
+                    Mensagem.objects.create(
+                        atendimento=protocolo.protocolo.atendimento,
+                        usuario=nome_usuario,
+                        mensagem=f"[Atualização do protocolo de suporte #{protocolo.id}] {mensagem}"
+                    )
+                    
+                    # Envia a mensagem via API para o atendimento do protocolo NOC-TX
+                    mensagem_noc = f"{nome_usuario} [Protocolo de Suporte #{protocolo.id}]: {mensagem}"
+                    adicionar_mensagem(protocolo.protocolo.atendimento.id_atendimento, mensagem_noc)
+                    
+                    return JsonResponse({
+                        'status': 'success', 
+                        'message': 'Mensagem enviada com sucesso para o atendimento do protocolo de suporte e para o protocolo NOC-TX relacionado!'
+                    })
+                except Exception as e:
+                    print(f"Erro ao adicionar mensagem ao atendimento do protocolo NOC-TX: {e}")
+                    return JsonResponse({
+                        'status': 'success', 
+                        'message': 'Mensagem enviada com sucesso para o atendimento, mas houve um erro ao sincronizar com o protocolo NOC-TX.'
+                    })
+            
+            return JsonResponse({'status': 'success', 'message': 'Mensagem enviada com sucesso!'})
+            
+        except Exception as e:
+            print(f"Erro ao enviar mensagem: {e}")
+            return JsonResponse({'status': 'error', 'message': f'Erro ao enviar mensagem: {str(e)}'})
+    
+    return JsonResponse({'status': 'error', 'message': 'Método não permitido.'}, status=405)
