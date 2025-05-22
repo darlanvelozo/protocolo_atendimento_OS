@@ -1,8 +1,9 @@
 # forms.py
 from django import forms
 from .models import Responsavel
-
 from .models import SuporteProtocolo
+from .models import Protocolo
+
 class MensagemForm(forms.Form):
     mensagem = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Digite sua mensagem'}))
 
@@ -32,3 +33,10 @@ class SuporteProtocoloForm(forms.ModelForm):
     class Meta:
         model = SuporteProtocolo
         fields = ['id_cliente_servico', 'descricao', 'responsavel', 'id_tipo_atendimento', 'id_atendimento_status', 'ativo', 'protocolo', 'data_hora_falha']
+
+class ProtocoloForm(forms.ModelForm):
+    responsavel_atendimento = forms.ModelChoiceField(queryset=Responsavel.objects.filter(ativo=True), required=False)
+    
+    class Meta:
+        model = Protocolo
+        fields = ['trecho', 'pop_trecho', 'tipo_evento', 'data_hora_falha', 'clientes_afetados', 'responsavel_atendimento', 'status_atendimento']

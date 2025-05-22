@@ -35,4 +35,5 @@ urlpatterns = [
     path('suporte/<int:protocolo_id>/', login_required(views.detalhes_protocolo_suporte), name='detalhes_protocolo_suporte'),
     path('suporte/<int:protocolo_id>/enviar-mensagem/', login_required(views.enviar_mensagem_suporte), name='enviar_mensagem_suporte'),
     path('relacionar-protocolos/', login_required(views.relacionar_protocolos), name='relacionar_protocolos'),
+    path('criar-protocolo/', login_required(views.criar_protocolo), name='criar_protocolo'),
 ]

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Protocolo, Trecho
+from .models import Protocolo, Trecho, Servico, Responsavel
 from django.db.models import Q
 from django.http import JsonResponse
 from datetime import datetime
@@ -14,7 +14,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Atendimento, Mensagem, Responsavel
 from django.shortcuts import render, redirect
 from .models import SuporteProtocolo
-from .forms import SuporteProtocoloForm
+from .forms import SuporteProtocoloForm, ProtocoloForm
+from .models import OrdemServico
 
 def criar_protocolo_suporte(request):
     if request.method == 'POST':
@@ -208,6 +209,10 @@ def detalhes_protocolo(request, protocolo_id):
     # Busca o protocolo e o atendimento relacionado
     protocolo = get_object_or_404(Protocolo, id=protocolo_id)
     atendimento = protocolo.atendimento
+    
+    ordem_servico = None
+    if atendimento:
+        ordem_servico = OrdemServico.objects.filter(id_atendimento=atendimento.id_atendimento).first()
 
     if request.method == "POST":
         # Captura os dados do formulário enviados via AJAX
@@ -257,11 +262,13 @@ def detalhes_protocolo(request, protocolo_id):
     mensagens = Mensagem.objects.filter(atendimento=atendimento).order_by('data_hora')
 
     # Renderiza a página com os dados do protocolo, atendimento e mensagens
-    return render(request, 'protocolocd/detalhes_protocolo.html', {
+    context = {
         'protocolo': protocolo,
         'atendimento': atendimento,
+        'ordem_servico': ordem_servico,
         'mensagens': mensagens,
-    })
+    }
+    return render(request, 'protocolocd/detalhes_protocolo.html', context)
 
 def trecho_json(request, pk):
     """
@@ -466,3 +473,28 @@ def enviar_mensagem_suporte(request, protocolo_id):
             return JsonResponse({'status': 'error', 'message': f'Erro ao enviar mensagem: {str(e)}'})
     
     return JsonResponse({'status': 'error', 'message': 'Método não permitido.'}, status=405)
+
+def criar_protocolo(request):
+    trechos = Trecho.objects.all()
+    servicos = Servico.objects.all()
+    tipos_evento = Protocolo.TIPOS_EVENTO
+    responsaveis = Responsavel.objects.filter(ativo=True)
+    status_atendimento_choices = Protocolo.STATUS_ATENDIMENTO_CHOICES
+
+    if request.method == 'POST':
+        form = ProtocoloForm(request.POST)
+        if form.is_valid():
+            protocolo = form.save()
+            return redirect('detalhes_protocolo', protocolo_id=protocolo.id)
+    else:
+        form = ProtocoloForm()
+
+    context = {
+        'form': form,
+        'trechos': trechos,
+        'servicos': servicos,
+        'tipos_evento': tipos_evento,
+        'responsaveis': responsaveis,
+        'status_atendimento_choices': status_atendimento_choices,
+    }
+    return render(request, 'protocolocd/criar_protocolo.html', context)

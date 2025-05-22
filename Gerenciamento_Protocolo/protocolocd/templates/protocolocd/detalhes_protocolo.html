@@ -346,6 +346,31 @@
             line-height: 1.5;
             border-radius: 5px;
         }
+
+        .ordem-servico-section {
+            background-color: #f1f3f5;
+            border-left: 6px solid var(--success-color);
+            padding: 1.8rem;
+            margin-top: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .ordem-servico-section h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+        }
+
+        .ordem-servico-section p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .ordem-servico-section p strong {
+            color: var(--text-color);
+        }
     </style>
 </head>
 
@@ -384,6 +409,18 @@
                     </div>
                 {% else %}
                     <p><i class="fas fa-exclamation-circle"></i> Este protocolo ainda não possui um atendimento associado.</p>
+                {% endif %}
+                
+                {% if ordem_servico %}
+                    <div class="ordem-servico-section">
+                        <h3><i class="fas fa-tools"></i> Informações da Ordem de Serviço</h3>
+                        <p><strong>Número da OS:</strong> {{ ordem_servico.numero_ordem_servico }}</p>
+                        <p><strong>Tipo da OS:</strong> {{ ordem_servico.tipo_ordem_servico }}</p>
+                        <p><strong>Status da OS:</strong> {{ ordem_servico.get_status_display }}</p>
+                        <p><strong>Data de Cadastro:</strong> {{ ordem_servico.data_cadastro }}</p>
+                        <p><strong>Data Início Programado:</strong> {{ ordem_servico.data_inicio_programado }}</p>
+                        <p><strong>Data Término Programado:</strong> {{ ordem_servico.data_termino_programado }}</p>
+                    </div>
                 {% endif %}
                 
                 <!-- Seção de protocolos de suporte relacionados -->

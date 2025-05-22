@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Protocolo</title>
+    <!-- Adicione os estilos necessários -->
+</head>
+<body>
+    <div class="container">
+        <h1>Criar Protocolo</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="trecho">Trecho:</label>
+                <select name="trecho" id="trecho" class="form-control" required>
+                    <option value="">Selecione um trecho</option>
+                    {% for trecho in trechos %}
+                        <option value="{{ trecho.id }}">{{ trecho.trecho }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pop_trecho">POP/Trecho:</label>
+                <select name="pop_trecho" id="pop_trecho" class="form-control">
+                    <option value="">Selecione um POP/Trecho</option>
+                    {% for servico in servicos %}
+                        <option value="{{ servico.id_cliente_servico }}">{{ servico.get_descricao_resumida }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tipo_evento">Tipo de Evento:</label>
+                <select name="tipo_evento" id="tipo_evento" class="form-control" required>
+                    <option value="">Selecione um tipo de evento</option>
+                    {% for tipo_evento in tipos_evento %}
+                        <option value="{{ tipo_evento.0 }}">{{ tipo_evento.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="data_hora_falha">Data/Hora da Falha:</label>
+                <input type="datetime-local" name="data_hora_falha" id="data_hora_falha" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="clientes_afetados">Clientes Afetados:</label>
+                <textarea name="clientes_afetados" id="clientes_afetados" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="responsavel_atendimento">Responsável pelo Atendimento:</label>
+                <select name="responsavel_atendimento" id="responsavel_atendimento" class="form-control">
+                    <option value="">Selecione um responsável</option>
+                    {% for responsavel in responsaveis %}
+                        <option value="{{ responsavel.id }}">{{ responsavel }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="status_atendimento">Status do Atendimento:</label>
+                <select name="status_atendimento" id="status_atendimento" class="form-control" required>
+                    <option value="">Selecione um status</option>
+                    {% for status in status_atendimento_choices %}
+                        <option value="{{ status.0 }}">{{ status.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Criar Protocolo</button>
+        </form>
+    </div>
+    <!-- Adicione os scripts necessários -->
+    <script src="{% static 'js/criar_protocolo.js' %}"></script>
+</body>
+</html>

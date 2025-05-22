@@ -161,7 +161,7 @@ class Protocolo(models.Model):
         (669, 'NOC TX > OUTROS'),
         (671, 'NOC TX > RUPTURA MEGALINK'),
     ]
-    status_atendimento_choices = [
+    STATUS_ATENDIMENTO_CHOICES = [
         (1, 'PENDENTE (Abertura de OS)'),
         (2, 'AGUARDANDO ANALISE'),
     ]
@@ -199,7 +199,7 @@ class Protocolo(models.Model):
     )
     ativo = models.BooleanField(default=True)
     
-    status_atendimento = models.IntegerField(default=2, choices=status_atendimento_choices)
+    status_atendimento = models.IntegerField(choices=STATUS_ATENDIMENTO_CHOICES, default=2, verbose_name="Status do Atendimento")
     
     protocolos_suporte = models.ManyToManyField('SuporteProtocolo', blank=True, related_name='protocolos')
     
@@ -403,13 +403,13 @@ class OrdemServico(models.Model):
     data_termino_programado = models.DateTimeField()
     
     # Campos de cliente/serviço
-    cliente_servico_display = models.CharField(max_length=255)
+    cliente_servico_display = models.CharField(max_length=755)
     cliente_servico_id = models.IntegerField()
-    cliente = models.CharField(max_length=255)
+    cliente = models.CharField(max_length=755)
     
     # Campos para rastreamento da requisição
     response_status = models.CharField(max_length=50)  # success, error, etc.
-    response_msg = models.CharField(max_length=255)
+    response_msg = models.CharField(max_length=755)
     data_criacao = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
